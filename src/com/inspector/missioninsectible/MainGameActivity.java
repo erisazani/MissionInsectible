@@ -6,6 +6,7 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 
 public class MainGameActivity extends BaseGameActivity {
@@ -26,6 +27,7 @@ public class MainGameActivity extends BaseGameActivity {
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// TODO Auto-generated method stub
+		Log.d("Tes","Tes");
 		return null;
 	}
 
