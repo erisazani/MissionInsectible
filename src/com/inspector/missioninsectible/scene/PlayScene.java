@@ -2,10 +2,12 @@ package com.inspector.missioninsectible.scene;
 
 import java.io.IOException;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.augmentedreality.BaseAugmentedRealityGameActivity;
 import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.bitmap.AssetBitmapTexture;
@@ -21,7 +23,6 @@ import android.util.Log;
 
 import com.inspector.missioninsectible.MainGameActivity;
 
-//import com.example.tutor.BaseActivity;
 
 public class PlayScene extends BaseAugmentedRealityGameActivity implements SensorEventListener {
 	
@@ -30,22 +31,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	public ITexture mFaceTexture;
 	public ITextureRegion mFaceTextureRegion;
 
-	private float accX, accY, accZ;
+	private float accX, accY, accZ, accPrevX, accPrevY, accPrevZ, dx, dy, dz;
 	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer; 
 	
+	private Sprite face;
+	
 	public PlayScene() {
-//		super();
-//		activity = MainGameActivity.getSharedInstance();
-//		
-//		setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
-//
-//		final float centerX = (activity.mCamera.getWidth() - activity.mFaceTextureRegion.getWidth()) / 2;
-//		final float centerY = (activity.mCamera.getHeight() - activity.mFaceTextureRegion.getHeight()) / 2;
-//		final Sprite face = new Sprite(centerX, centerY, activity.mFaceTextureRegion, activity.getVertexBufferObjectManager());
-////		face.registerEntityModifier(new MoveModifier(30, 0, 320 - face.getWidth(), 0, 240 - face.getHeight()));
-//		attachChild(face);
 	}
 
 	@Override
@@ -57,6 +50,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		//get the accelerometer sensor
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+		//register the accelerometer
+//		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
 				
 		return activity.engineOptions;
 	}
@@ -79,12 +75,23 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected Scene onCreateScene() {
 		Log.d("debug", "masuk PlayScene.onCreateScene");
 		
+		this.mEngine.registerUpdateHandler(new FPSLogger());
+		this.mEngine.registerUpdateHandler(new IUpdateHandler() {
+            public void onUpdate(float pSecondsElapsed) {
+//                    updateSpritePosition();
+            }
+
+            public void reset() {
+                    // TODO Auto-generated method stub
+            }
+		});
+		
 		final Scene gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
 
 		final float centerX = (activity.mCamera.getWidth() - mFaceTextureRegion.getWidth()) / 2;
 		final float centerY = (activity.mCamera.getHeight() - mFaceTextureRegion.getHeight()) / 2;
-		final Sprite face = new Sprite(centerX, centerY, mFaceTextureRegion, activity.getVertexBufferObjectManager());
+		face = new Sprite(centerX, centerY, mFaceTextureRegion, activity.getVertexBufferObjectManager());
 //		face.registerEntityModifier(new MoveModifier(30, 0, 320 - face.getWidth(), 0, 240 - face.getHeight()));
 		gameScene.attachChild(face);
 		
@@ -93,24 +100,43 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onSensorChanged(SensorEvent e) {
+		accPrevX = accX;
+		accPrevY = accY;
+		accPrevZ = accZ;
+		
 		accX = e.values[0];
 		accY = e.values[1];
 		accZ = e.values[2];
 		
-		Log.d("Accelero", "x = " + accX + ", y = " + accY + ", z = " + accZ);
+		dx = accX - accPrevX;
+		dy = accY - accPrevY;
+		dz = accZ - accPrevZ;
+		
+//		Log.d("Accelero", "x = " + accX + ", y = " + accY + ", z = " + accZ);
+//		Log.d("Accelero", "dx = " + dx + ", dy = " + dy);
+	}
+	
+	public void updateSpritePosition() {
+		if(Math.abs(dx) > 5.0f || Math.abs(dy) > 5.0f) {
+			face.setPosition(face.getY() - dy, face.getX() - dx);
+		}
+		Log.d("Accelero", "faceX = " + face.getX() + ", faceY = " + face.getY());
 	}
 	
 	@Override
 	protected void onResume() {
 		Log.d("debug", "masuk PlayScene.onResume");
 		super.onResume();
-		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		System.gc();
+		if(mSensorManager != null) {
+			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+		}
+		
 	}
 	
 	@Override
@@ -118,5 +144,18 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		Log.d("debug", "masuk PlayScene.onPause");
 		super.onPause();
 		mSensorManager.unregisterListener(this);
+//		System.exit(0);
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		Log.d("debug", "masuk PlayScene.onDestroy");
+		super.onDestroy();
+	        
+	    if (this.isGameLoaded())
+	    {
+	        System.exit(0);    
+	    }
 	}
 }

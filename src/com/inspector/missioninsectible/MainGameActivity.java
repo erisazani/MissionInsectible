@@ -45,7 +45,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		
 		engineOptions = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_SENSOR, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
 		final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 		configChooserOptions.setRequestedRedSize(8);
 		configChooserOptions.setRequestedGreenSize(8);
