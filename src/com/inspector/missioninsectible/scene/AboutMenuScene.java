@@ -8,16 +8,17 @@ import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 
 import com.inspector.missioninsectible.MainGameActivity;
 
-public class HiScoreMenuScene extends Scene {
+public class AboutMenuScene extends Scene {
+
 	MainGameActivity activity = MainGameActivity.getSharedInstance();
 	
-	public HiScoreMenuScene(){
+	public AboutMenuScene(){
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		
-		Sprite HiScoreBoard = new Sprite(activity.getCameraWidth() / 2 - activity.mBoardHiScoreTexture.getWidth()/2 , activity.getCameraHeight() / 2 - activity.mBoardHiScoreTexture.getHeight()/2, activity.mBoardHiScoreTexture, activity.getVertexBufferObjectManager());
-		attachChild(HiScoreBoard);
+		Sprite AboutBoard = new Sprite(activity.getCameraWidth() / 2 - activity.mBoardAboutTexture.getWidth()/2 , activity.getCameraHeight() / 2 - activity.mBoardAboutTexture.getHeight()/2, activity.mBoardAboutTexture, activity.getVertexBufferObjectManager());
+		attachChild(AboutBoard);
 		
-		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2 - activity.mHomeGalleryTexture.getWidth()/2 , activity.getCameraHeight()- activity.mBoardHowToTexture.getHeight()/2 - 5, activity.mHomeGalleryTexture, activity.getVertexBufferObjectManager(), new OnClickListener() {
+		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2 - activity.mHomeGalleryTexture.getWidth()/2 , activity.getCameraHeight()- activity.mBoardAboutTexture.getHeight()/2 - 5, activity.mHomeGalleryTexture, activity.getVertexBufferObjectManager(), new OnClickListener() {
 			
 			@Override
 			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
@@ -30,5 +31,6 @@ public class HiScoreMenuScene extends Scene {
 		attachChild(HomeMenuItem);
 		
 		setTouchAreaBindingOnActionDownEnabled(true);
-		}
+		
+	}
 }
