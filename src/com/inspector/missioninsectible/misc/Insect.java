@@ -76,6 +76,19 @@ public class Insect {
 		return this.type;
 	}
 	
-	//getter name, score, spawntime, speed
+	public String getName() {
+		return this.name;
+	}
 	
+	public int getScore() {
+		return this.score;
+	}
+	
+	public int getSpawnTime() {
+		return this.spawnTime;
+	}
+	
+	public int getSpeed() {
+		return this.speed;
+	}
 }
