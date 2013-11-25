@@ -79,10 +79,14 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mBattleTexture;
 	public TextureRegion mBoardBattleTexture;
 	public TextureRegion mPlayBattleTexture;
-	
+
 	private BitmapTextureAtlas mLoadScreenBGTexture;
 	public TextureRegion mLoadScreenBGRegion;
 	public Font time;
+	private BitmapTextureAtlas mInsectTexture;
+	public TextureRegion greyButterfly;
+	public TextureRegion greyDragonfly;
+	public TextureRegion greyBee;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -140,6 +144,11 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			this.mBoardGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryTexture, this, "Gallery_Board.png",0,0);
 			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryTexture, this, "Functional_button_home.png", 410, 0);
 			this.mGalleryTexture.load();
+			this.mInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.greyButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "butterfly-grey.png",0,0);
+			this.greyDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "dragonfly-grey.png",90,0);
+			this.greyBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "bee-grey.png",180,0);
+			this.mInsectTexture.load();
 			
 //			for HiScore Menu
 			this.mHiScoreTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);

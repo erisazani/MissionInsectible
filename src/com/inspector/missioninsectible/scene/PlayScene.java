@@ -41,6 +41,8 @@ public class PlayScene extends Scene {
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		Text countDown = new Text(10,10, activity.time ,"10", activity.getVertexBufferObjectManager());
 		attachChild(countDown);
+		
+		
 //		final float centerX = (activity.mCamera.getWidth() - activity.mFaceTextureRegion.getWidth()) / 2;
 //		final float centerY = (activity.mCamera.getHeight() - activity.mFaceTextureRegion.getHeight()) / 2;
 //		//final Sprite face = new Sprite(centerX, centerY, activity.mFaceTextureRegion, activity.getVertexBufferObjectManager());
