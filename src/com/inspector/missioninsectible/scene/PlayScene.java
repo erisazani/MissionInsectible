@@ -148,6 +148,8 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            if(gameStart) { 
 	            	gameSec--;
 	            	mText.setText("" + gameSec);
+	            } else {
+	            	mEngine.unregisterUpdateHandler(pTimerHandler);
 	            }
 	        }
 	    });
