@@ -8,66 +8,44 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.augmentedreality.BaseAugmentedRealityGameActivity;
-import org.andengine.opengl.font.Font;
-import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.bitmap.AssetBitmapTexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
+import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import com.inspector.missioninsectible.scene.PlayScene;
 
-import android.graphics.Typeface;
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.Log;
 
-public class MainGameActivity extends BaseAugmentedRealityGameActivity {
-	static final int CAMERA_WIDTH = 854;
-	static final int CAMERA_HEIGHT = 480;
+public class MainGameActivity extends SimpleBaseGameActivity {
+	static final int CAMERA_WIDTH = 320;
+	static final int CAMERA_HEIGHT = 240;
 	
-	static final int CAMERA_WIDTH2 = 320;
-	static final int CAMERA_HEIGHT2 = 240;
-	
-	private static final int LAYER_BACKGROUND = 0;
-	
-	public Font mFont;
+	public EngineOptions engineOptions;
 	public Camera mCamera;
 	
 	private Scene mScene;
 	public Scene mCurrentScene;
-	private BitmapTextureAtlas mBackgroundTexture;
-	TextureRegion mBackgroundTextureRegion;
 	public static MainGameActivity instance;
-
-	private BitmapTextureAtlas mMenuTexture;
-	TextureRegion mMenuPlayTextureRegion;
-	TextureRegion mMenuBattleTextureRegion;
-	TextureRegion mMenuBackgroundTextureRegion;
-	TextureRegion mMenuGalleryTextureRegion;
-	TextureRegion mMenuScoreTextureRegion;
-	TextureRegion mMenuHowToTextureRegion;
-	TextureRegion mMenuAboutTextureRegion;
-	TextureRegion mMenuQuitTextureRegion;
-	
-	public ITexture mFaceTexture;
-	public ITextureRegion mFaceTextureRegion;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		// TODO Auto-generated method stub
+		Log.d("debug", "masuk activity MainGameActivity");
 		instance = this;
-		mCamera = new Camera(0, 0, CAMERA_WIDTH2, CAMERA_HEIGHT2);
+		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		
-		final EngineOptions engineOptions = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_SENSOR, new RatioResolutionPolicy(CAMERA_WIDTH2, CAMERA_HEIGHT2), mCamera);
+		engineOptions = new EngineOptions(true,
+				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
 		final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 		configChooserOptions.setRequestedRedSize(8);
 		configChooserOptions.setRequestedGreenSize(8);
@@ -75,39 +53,26 @@ public class MainGameActivity extends BaseAugmentedRealityGameActivity {
 		configChooserOptions.setRequestedAlphaSize(8);
 		configChooserOptions.setRequestedDepthSize(16);
 		
+		Log.d("debug", "masuk keluar onCreateEngineOptions");
 		return engineOptions;
 	}
 
-
 	@Override
 	protected void onCreateResources() {
-		try {
-			mFaceTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/face_box.png");
-			Log.d("Texture", "Texture Loaded");
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.d("Texture", "Texture Not Loaded");
-		}
-		mFaceTextureRegion = TextureRegionFactory.extractFromTexture(mFaceTexture);
-		mFaceTexture.load();
+		
 	}
-
-
+	
 	@Override
 	protected Scene onCreateScene() {
 		mEngine.registerUpdateHandler(new FPSLogger());
-		mCurrentScene = new PlayScene();
+		Log.d("debug", "akan masuk activity PlayScene");
+		this.startActivity(new Intent(this, PlayScene.class));
+		Log.d("debug", "harusnya sudah masuk activity PlayScene");
 		
-		  return mCurrentScene;
+	 	return mCurrentScene;
 	}
-
 	
 	public static MainGameActivity getSharedInstance() {
 		return instance;
-	}
-	
-	public void setCurrentScene(Scene scene){
-		mCurrentScene = scene;
-		getEngine().setScene(mCurrentScene);
 	}
 }
