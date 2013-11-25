@@ -27,6 +27,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import com.inspector.missioninsectible.scene.PlayScene;
 import com.inspector.missioninsectible.scene.SplashScene;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -78,6 +79,10 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mBattleTexture;
 	public TextureRegion mBoardBattleTexture;
 	public TextureRegion mPlayBattleTexture;
+	
+	private BitmapTextureAtlas mLoadScreenBGTexture;
+	public TextureRegion mLoadScreenBGRegion;
+	public Font time;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -153,7 +158,15 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			this.mBoardAboutTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAboutTexture, this, "About_Board.png",0,0);
 			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAboutTexture, this, "Functional_button_home.png", 410, 0);
 			this.mAboutTexture.load();
-
+			
+//			for Loading Scene
+			this.mLoadScreenBGTexture = new BitmapTextureAtlas(this.getTextureManager() ,300,150, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+            this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
+            this.mLoadScreenBGTexture.load();
+            
+            this.time =  FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), 32, Color.WHITE);
+            this.time.load();
+            
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //			Log.d("Texture", "Texture Not Loaded");
@@ -189,4 +202,5 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		// TODO Auto-generated method stub
 		return CAMERA_HEIGHT;
 	}
+	
 }

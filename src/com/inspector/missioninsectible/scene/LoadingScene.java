@@ -3,6 +3,7 @@ package com.inspector.missioninsectible.scene;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 
 import com.inspector.missioninsectible.MainGameActivity;
@@ -14,10 +15,11 @@ public class LoadingScene extends Scene {
 		
 		activity = MainGameActivity.getSharedInstance();
 		
-		
-		setBackgroundEnabled(false);
-		Sprite background = new Sprite(0,0, activity.mBackgroundTextureRegion, activity.getVertexBufferObjectManager());
-		background.setSize(activity.getCameraWidth(), activity.getCameraHeight());
+		setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
+		final float centerX = (activity.mCamera.getWidth() - activity.mLoadScreenBGRegion.getWidth()) / 2;
+		final float centerY = (activity.mCamera.getHeight() - activity.mLoadScreenBGRegion.getHeight()) / 2;
+		Sprite background = new Sprite(centerX,centerY, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
+		//background.setSize(activity.getCameraWidth(), activity.getCameraHeight());
 		attachChild(background);
 	
 		startGame();
@@ -28,12 +30,12 @@ public class LoadingScene extends Scene {
 	public void startGame() {
 		// TODO Auto-generated method stub
 		DelayModifier dMod = new DelayModifier(4){
-			 
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 			        activity.setCurrentScene(new PlayScene());
 			    }
 			};
+			
 			registerEntityModifier(dMod);
 		}
 }
