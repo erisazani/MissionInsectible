@@ -1,11 +1,13 @@
 package com.inspector.missioninsectible.scene;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
@@ -34,31 +36,44 @@ import android.net.NetworkInfo.DetailedState;
 import android.util.Log;
 
 import com.inspector.missioninsectible.MainGameActivity;
+import com.inspector.missioninsectible.misc.Insect;
 
 
 public class PlayScene extends BaseAugmentedRealityGameActivity implements SensorEventListener, IAccelerationListener {
 	
 	private final int FONT_SIZE = 24;
+	private final int FONT_COMBO_SIZE = 40;
 	
 	MainGameActivity activity;
 	
 	public ITexture mFaceTexture;
 	public ITexture mFontTexture;
+	public ITexture mComboFontTexture;
 	public ITextureRegion mFaceTextureRegion;
 
 	private float accX, accY, accZ, accPrevX, accPrevY, accPrevZ, dx, dy, dz;
 	private float vX, vY, vZ, vPrevX, vPrevY, vPrevZ, dvx, dvy, dvz;
-	
+	private Rectangle rect;
 	private SensorManager mSensorManager;
-	private Sensor mAccelerometer; 
+	private Sensor mAccelerometer;
 	
 	private Sprite face;
 	private Font mFont;
+	private Font mComboFont;
+	
+	private Text scoreLblText, scoreText, comboText;
+	private Insect insect;
+	private int ctype = 0;
+	private int amount = 0;
+	private int combo = 1;
+	public int score = 0;
 	
 	private Text mText;
 	private int countSec = 10;
 	private int gameSec = 20;
 	private boolean gameStart = false;
+	
+	private boolean isCatching;
 	
 	public PlayScene() {
 	}
@@ -93,18 +108,31 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		mFaceTexture.load();
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-//		this.mEngine.getTextureManager().loadTexture(mFontTexture);
+		this.mComboFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+//		
 		this.mFontTexture.load();
+		this.mComboFontTexture.load();
+		
 		this.mFont = new Font(this.mEngine.getFontManager(), this.mFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), FONT_SIZE, true, Color.WHITE);
+		this.mComboFont = new Font(this.mEngine.getFontManager(), this.mComboFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), FONT_COMBO_SIZE, true, Color.WHITE);
+		
 		this.mEngine.getFontManager().loadFont(mFont);
+		this.mEngine.getFontManager().loadFont(mComboFont);
 	}
 
 	@Override
 	protected Scene onCreateScene() {
 		Log.d("debug", "masuk PlayScene.onCreateScene");
 		
-		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, this.mEngine.getVertexBufferObjectManager());
+		scoreLblText = new Text(activity.mCamera.getWidth() / 5 - 20, activity.mCamera.getHeight() - FONT_SIZE / 2, mFont, "Score" , this.mEngine.getVertexBufferObjectManager());
+		scoreText = new Text(activity.mCamera.getWidth() / 5 + 30, activity.mCamera.getHeight() - (int)(FONT_SIZE *1.5 / 2), mFont, "" + score , 7, this.mEngine.getVertexBufferObjectManager());
+		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
+		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 3, this.mEngine.getVertexBufferObjectManager());
+		rect= new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2,50f,50f,activity.getVertexBufferObjectManager());
 		mText.setColor(Color.RED);
+		scoreLblText.setColor(Color.GREEN);
+		scoreText.setColor(Color.GREEN);
+		comboText.setColor(Color.PINK);
 		
 		final Scene gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
@@ -112,14 +140,18 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		final float centerX = (activity.mCamera.getWidth() - mFaceTextureRegion.getWidth()) / 2;
 		final float centerY = (activity.mCamera.getHeight() - mFaceTextureRegion.getHeight()) / 2;
 		face = new Sprite(centerX, centerY, mFaceTextureRegion, activity.getVertexBufferObjectManager());
+		gameScene.attachChild(rect);
 		gameScene.attachChild(mText);
+		gameScene.attachChild(scoreLblText);
+		gameScene.attachChild(scoreText);
+		gameScene.attachChild(comboText);
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		this.mEngine.registerUpdateHandler(new TimerHandler(1, true, new ITimerCallback() {
 	        public void onTimePassed(TimerHandler pTimerHandler) {
 	        	countSec--;
 	        	mText.setText("" + countSec);
-	        	if(countSec == 1) {
+	        	if(countSec == 3) {
 					mText.setColor(Color.GREEN);
 	        	}
 				if(countSec < 0) {
@@ -148,13 +180,31 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            if(gameStart) { 
 	            	gameSec--;
 	            	mText.setText("" + gameSec);
-	            } else {
+	            } 
+	            if(gameSec < 0) {
+	            	gameStart = false;
 	            	mEngine.unregisterUpdateHandler(pTimerHandler);
 	            }
 	        }
 	    });
 	    this.mEngine.registerUpdateHandler(myTimer);   // here you register the timerhandler to your scene
 		
+	    this.mEngine.registerUpdateHandler(new IUpdateHandler() {
+            public void onUpdate(float pSecondsElapsed) {
+            	if(gameSec > 0) {
+	            	insect=createInsect();
+	            	catchInsects();
+	            	if (amount>=5){
+	            		freeInsects();
+	            	}
+            	}
+            }
+
+            public void reset() {
+                    // TODO Auto-generated method stub
+            }
+		});
+	    
 		return gameScene;
 	}
 
@@ -178,6 +228,46 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		dz = accZ - accPrevZ;
 	}
 	
+	public void catchInsects() {
+		if(!isCatching) {
+			if (dz >= 10.0f){
+				if(rect.collidesWith(face)) {
+					if(amount++<=5) {
+						face.setPosition(face.getY() - dy, face.getX() - dx);
+						if(ctype==insect.getType()){combo++;}
+						score += insect.getScore()*combo;
+						comboText.setText("X" + combo);
+						scoreText.setText("" + score);
+						ctype=insect.getType();
+						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
+					} else {
+						Log.d("catch", "lepaskan dulu");
+						//amount=0;
+					}
+					isCatching = true;
+				}
+			} 
+		}
+		if(isCatching && accZ < -5.f) {
+			Log.d("catch", "silakan tangkap");
+			isCatching = false;
+		}
+	}
+	
+	protected void freeInsects(){
+		if (dz >= 5.0f){
+			amount=0;
+			Log.d("free","syuddah lepaaas :)");
+		}
+	}
+	
+	protected Insect createInsect(){
+		Random randomGenerator = new Random();
+		int type = randomGenerator.nextInt(6)+1;
+		ctype=(ctype==0?type:ctype);
+		return new Insect(type);
+	}
+		
 	public void updateSpritePosition() {
 		if(accY < -1.0f) {
 			if(accZ < -1.0f) {
