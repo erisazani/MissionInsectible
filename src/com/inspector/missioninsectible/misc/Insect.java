@@ -21,6 +21,7 @@ public class Insect extends Sprite {
 	
 	/* Name of the insects */
 	public static final String[] INSECT_NAME = new String[] {
+		"",
 		"Beetle", 
 		"Ladybug", 
 		"Grasshopper", 
@@ -32,6 +33,7 @@ public class Insect extends Sprite {
 	
 	/* Base score of the insects */
 	public static final int[] INSECT_SCORE = new int[] {
+		0,
 		10,
 		25,
 		60,
@@ -44,6 +46,7 @@ public class Insect extends Sprite {
 	/* Seconds elapsed required to spawn the insects */
 	public static final int[] SPAWN_TIME = new int[] {
 		0,
+		0,
 		15,
 		40,
 		75,
@@ -54,6 +57,7 @@ public class Insect extends Sprite {
 	
 	/* Speed of the insects */
 	public static final float[] INSECT_SPEED = new float[] {
+		0f,
 		0.30f,
 		0.40f,
 		0.75f,
