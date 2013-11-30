@@ -1,6 +1,7 @@
 package com.inspector.missioninsectible.scene;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.andengine.engine.handler.IUpdateHandler;
@@ -44,24 +45,42 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private final int FONT_SIZE = 24;
 	private final int FONT_COMBO_SIZE = 40;
 	
-	MainGameActivity activity;
+	private final float INSECT_WIDTH = 32.0f;
 	
-	public ITexture mFaceTexture;
+	MainGameActivity activity;
+	private Scene gameScene;
+	
+	private ITexture beetleTexture;
+	private ITexture ladybugTexture;
+	private ITexture grasshopperTexture;
+	private ITexture butterflyTexture;
+	private ITexture beeTexture;
+	private ITexture goldenDragonflyTexture;
+	private ITexture timeTexture;
+	
 	public ITexture mFontTexture;
 	public ITexture mComboFontTexture;
-	public ITextureRegion mFaceTextureRegion;
+	public ITextureRegion beetleTextureRegion;
+	public ITextureRegion ladybugTextureRegion;
+	public ITextureRegion grasshopperTextureRegion;
+	public ITextureRegion butterflyTextureRegion;
+	public ITextureRegion beeTextureRegion;
+	public ITextureRegion goldenDragonflyTextureRegion;
+	public ITextureRegion timeTextureRegion;
 
 	private float accX, accY, accZ, accPrevX, accPrevY, accPrevZ, dx, dy, dz;
 	private float vX, vY, vZ, vPrevX, vPrevY, vPrevZ, dvx, dvy, dvz;
 	private Rectangle rect;
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
+//	private Sensor mAcceleration;
 	
-	private Sprite face;
+//	private Sprite face;
 	private Font mFont;
 	private Font mComboFont;
 	
 	private Text scoreLblText, scoreText, comboText;
+	private ArrayList<Insect> insects;
 	private Insect insect;
 	private int ctype = 0;
 	private int amount = 0;
@@ -70,10 +89,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	private Text mText;
 	private int countSec = 10;
-	private int gameSec = 20;
+	private int gameSec = 60;
 	private boolean gameStart = false;
 	
 	private boolean isCatching;
+	
+	// dummy variables, delete later
+//	Text xt, yt, zt;
+	int count;
 	
 	public PlayScene() {
 	}
@@ -87,9 +110,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		//get the accelerometer sensor
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-		//register the accelerometer
-//		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+//		mAcceleration = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 				
 		return activity.engineOptions;
 	}
@@ -98,18 +119,37 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected void onCreateResources() throws IOException {
 		Log.d("debug", "masuk PlayScene.onCreateResources");
 		try {
-			mFaceTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/face_box.png");
+			beetleTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_beetle.png");
+			ladybugTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_ladybug.png");
+			grasshopperTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_grasshopper.png");
+			butterflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_butterfly.png");
+			beeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_bee.png");
+			goldenDragonflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_golden_dragonfly.png");
+			timeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_time.png");
 			Log.d("Texture", "Texture Loaded");
 		} catch (IOException e) {
 			e.printStackTrace();
 			Log.d("Texture", "Texture Not Loaded");
 		}
-		mFaceTextureRegion = TextureRegionFactory.extractFromTexture(mFaceTexture);
-		mFaceTexture.load();
+		beetleTextureRegion = TextureRegionFactory.extractFromTexture(beetleTexture);
+		ladybugTextureRegion = TextureRegionFactory.extractFromTexture(ladybugTexture);
+		grasshopperTextureRegion = TextureRegionFactory.extractFromTexture(grasshopperTexture);
+		butterflyTextureRegion = TextureRegionFactory.extractFromTexture(butterflyTexture);
+		beeTextureRegion = TextureRegionFactory.extractFromTexture(beeTexture);
+		goldenDragonflyTextureRegion = TextureRegionFactory.extractFromTexture(goldenDragonflyTexture);
+		timeTextureRegion = TextureRegionFactory.extractFromTexture(timeTexture);
+		
+		beetleTexture.load();
+		ladybugTexture.load();
+		grasshopperTexture.load();
+		butterflyTexture.load();
+		beeTexture.load();
+		goldenDragonflyTexture.load();
+		timeTexture.load();
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mComboFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-//		
+
 		this.mFontTexture.load();
 		this.mComboFontTexture.load();
 		
@@ -124,22 +164,36 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected Scene onCreateScene() {
 		Log.d("debug", "masuk PlayScene.onCreateScene");
 		
-		scoreLblText = new Text(activity.mCamera.getWidth() / 5 - 20, activity.mCamera.getHeight() - FONT_SIZE / 2, mFont, "Score" , this.mEngine.getVertexBufferObjectManager());
-		scoreText = new Text(activity.mCamera.getWidth() / 5 + 30, activity.mCamera.getHeight() - (int)(FONT_SIZE *1.5 / 2), mFont, "" + score , 7, this.mEngine.getVertexBufferObjectManager());
+		scoreLblText = new Text(50, activity.mCamera.getHeight() - FONT_SIZE / 2, mFont, "Score" , this.mEngine.getVertexBufferObjectManager());
+		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score , 7, this.mEngine.getVertexBufferObjectManager());
 		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
 		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 3, this.mEngine.getVertexBufferObjectManager());
-		rect= new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2,50f,50f,activity.getVertexBufferObjectManager());
+		
+//		xt = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2 + 30, mFont, "dX: " + dvx, 20, this.mEngine.getVertexBufferObjectManager());
+//		yt = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "dY: " + dvy, 20, this.mEngine.getVertexBufferObjectManager());
+//		zt = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2 - 30, mFont, "dZ: " + dvz, 20, this.mEngine.getVertexBufferObjectManager());
+		
+		
+		// perbaiki letaknya!
+		rect= new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2, 50.0f, 50.0f, activity.getVertexBufferObjectManager());
+		
 		mText.setColor(Color.RED);
 		scoreLblText.setColor(Color.GREEN);
 		scoreText.setColor(Color.GREEN);
 		comboText.setColor(Color.PINK);
 		
-		final Scene gameScene = new Scene();
+		gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
 
-		final float centerX = (activity.mCamera.getWidth() - mFaceTextureRegion.getWidth()) / 2;
-		final float centerY = (activity.mCamera.getHeight() - mFaceTextureRegion.getHeight()) / 2;
-		face = new Sprite(centerX, centerY, mFaceTextureRegion, activity.getVertexBufferObjectManager());
+//		final float centerX = (activity.mCamera.getWidth() - beetleTextureRegion.getWidth()) / 2;
+//		final float centerY = (activity.mCamera.getHeight() - beetleTextureRegion.getHeight()) / 2;
+		
+		Random r = new Random();
+		float initX = r.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
+		float initY = (r.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
+		insect = new Insect(initX, initY, ladybugTextureRegion, activity.getVertexBufferObjectManager(), 1);
+		Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
+		
 		gameScene.attachChild(rect);
 		gameScene.attachChild(mText);
 		gameScene.attachChild(scoreLblText);
@@ -156,9 +210,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	        	}
 				if(countSec < 0) {
 					gameScene.detachChild(mText);
-					mText.setPosition(activity.mCamera.getWidth()/2, activity.mCamera.getHeight() - FONT_SIZE / 2);
+					mText.setPosition(activity.mCamera.getWidth()/2, activity.mCamera.getHeight() - FONT_SIZE / 2 - 10);
 					gameScene.attachChild(mText);
-					gameScene.attachChild(face);
+					gameScene.attachChild(insect);
 					gameStart = true;
 					mText.setText("" + gameSec);
 					mEngine.unregisterUpdateHandler(pTimerHandler);
@@ -168,8 +222,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		);
 		this.mEngine.registerUpdateHandler(new IUpdateHandler() {
             public void onUpdate(float pSecondsElapsed) {
-            if(gameStart)
-            	updateSpritePosition();
+	            if(gameStart) {
+	            	updateSpritePosition();
+	            	removeOutlyingInsects();
+	            }
             }
 
             public void reset() {}
@@ -182,29 +238,40 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            	mText.setText("" + gameSec);
 	            } 
 	            if(gameSec < 0) {
+	            	// GAME OVER
 	            	gameStart = false;
+	            	mText.setText("0");
 	            	mEngine.unregisterUpdateHandler(pTimerHandler);
 	            }
 	        }
 	    });
-	    this.mEngine.registerUpdateHandler(myTimer);   // here you register the timerhandler to your scene
+	    this.mEngine.registerUpdateHandler(myTimer);
 		
 	    this.mEngine.registerUpdateHandler(new IUpdateHandler() {
             public void onUpdate(float pSecondsElapsed) {
-            	if(gameSec > 0) {
-	            	insect=createInsect();
+            	if(gameStart) {
 	            	catchInsects();
 	            	if (amount>=5){
 	            		freeInsects();
 	            	}
             	}
+
+//            	count++;
+//            	if(count % 20 == 0) {
+//	        		xt.setText("" + dvx);		// selesaikan urusan disini
+//	        		yt.setText("" + dvy);
+//	        		zt.setText("" + dvz);
+//	        		Log.d("Acceleration", "dvx: " + dvx);
+//	        		Log.d("Acceleration", "dvy: " + dvy);
+//	        		Log.d("Acceleration", "dvz: " + dvz);
+//	        		count = 0;
+//            	}
             }
 
             public void reset() {
-                    // TODO Auto-generated method stub
             }
 		});
-	    
+
 		return gameScene;
 	}
 
@@ -231,15 +298,25 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	public void catchInsects() {
 		if(!isCatching) {
 			if (dz >= 10.0f){
-				if(rect.collidesWith(face)) {
-					if(amount++<=5) {
-						face.setPosition(face.getY() - dy, face.getX() - dx);
-						if(ctype==insect.getType()){combo++;}
-						score += insect.getScore()*combo;
+				if(rect.collidesWith(insect)) {
+					if(amount++<=5) {		
+						// terkait per-combo-an
+						if(ctype == insect.getType())
+							combo++;
+						else 
+							combo = 1;
+						
+						// terkait per-score-an
+						score += insect.getScore() * combo;
 						comboText.setText("X" + combo);
 						scoreText.setText("" + score);
 						ctype=insect.getType();
 						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
+						
+						// remove si serangga, buat yg baru lagi
+						gameScene.detachChild(insect);
+						insect = createInsect();
+						gameScene.attachChild(insect);
 					} else {
 						Log.d("catch", "lepaskan dulu");
 						//amount=0;
@@ -263,39 +340,87 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	protected Insect createInsect(){
 		Random randomGenerator = new Random();
-		int type = randomGenerator.nextInt(6)+1;
-		ctype=(ctype==0?type:ctype);
-		return new Insect(type);
+		
+		int type = randomGenerator.nextInt(6) + 1;
+		float initX = randomGenerator.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
+		float initY = (randomGenerator.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
+		
+		// CEK DI BAGIAN SINI
+		ctype = (ctype == 0? type : ctype);
+		
+		switch (type) {
+			case 1: 
+				Log.d("insect", "buat beetle di posisi " + initX + "," + initY); 
+				return new Insect(initX, initY, beetleTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 2: 
+				Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, ladybugTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 3: 
+				Log.d("insect", "buat grasshopper di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, grasshopperTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 4: 
+				Log.d("insect", "buat butterfly di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, butterflyTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 5: 
+				Log.d("insect", "buat bee di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, beeTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 6: 
+				Log.d("insect", "buat golden dragonfly di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, goldenDragonflyTextureRegion, this.getVertexBufferObjectManager(), type);
+			case 7: 
+				Log.d("insect", "buat time insect di posisi " + initX + "," + initY);
+				return new Insect(initX, initY, timeTextureRegion, this.getVertexBufferObjectManager(), type);
+			default: 
+				return new Insect(initX, initY, beetleTextureRegion, this.getVertexBufferObjectManager(), type);	
+		}
 	}
 		
+	/**
+	 * Ini masih gak pas..............
+	 */
 	public void updateSpritePosition() {
 		if(accY < -1.0f) {
 			if(accZ < -1.0f) {
-				face.setPosition(face.getX() + 0.5f, face.getY() - 0.5f);
+				insect.setPosition(insect.getX() - 1.0f, insect.getY() - 1.0f);
 			} else if (accZ > -1.0f && accZ < 1.0f) {
-				face.setPosition(face.getX() + 0.5f, face.getY());
+				insect.setPosition(insect.getX() - 1.0f, insect.getY());
 			} else {
-				face.setPosition(face.getX() + 0.5f, face.getY() + 0.5f);
+				insect.setPosition(insect.getX() - 1.0f, insect.getY() + 1.0f);
 			}
 		} else if(accY > -1.0f && accY < 1.0f) {
 			if(accZ < -1.0f) {
-				face.setPosition(face.getX(), face.getY() - 0.5f);
+				insect.setPosition(insect.getX(), insect.getY() - 1.0f);
 			} else if (accZ > -1.0f && accZ < 1.0f) {
-				face.setPosition(face.getX(), face.getY());
+				insect.setPosition(insect.getX(), insect.getY());
 			} else {
-				face.setPosition(face.getX(), face.getY() + 0.5f);
+				insect.setPosition(insect.getX(), insect.getY() + 1.0f);
 			}
 		} else {
 			if(accZ < -1.0f) {
-				face.setPosition(face.getX() - 0.5f, face.getY() - 0.5f);
+				insect.setPosition(insect.getX() + 1.0f, insect.getY() - 1.0f);
 			} else if (accZ > -1.0f && accZ < 1.0f) {
-				face.setPosition(face.getX() - 0.5f, face.getY());
+				insect.setPosition(insect.getX() + 1.0f, insect.getY());
 			} else {
-				face.setPosition(face.getX() - 0.5f, face.getY() + 0.5f);
+				insect.setPosition(insect.getX() + 1.0f, insect.getY() + 1.0f);
 			}
 		}
 		
-//		Log.d("Accelero", "faceX = " + face.getX() + ", faceY = " + face.getY());
+		// pergerakan khusus masing-masing serangga
+		insect.move();
+		
+//			Log.d("Accelero", "faceX = " + face.getX() + ", faceY = " + face.getY());
+	}
+	
+	public void removeOutlyingInsects() {
+		if(insect.getX() < -50.0f 
+				|| insect.getX() > activity.mCamera.getWidth() + 50.0f
+				|| insect.getY() < -50.0f
+				|| insect.getY() > activity.mCamera.getHeight() + 50.0f) {
+			// remove and create new insect
+			gameScene.detachChild(insect);
+			insect = createInsect();
+			gameScene.attachChild(insect);
+		}
 	}
 	
 	@Override
@@ -316,6 +441,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		dvx = vX - vPrevX;
 		dvy = vY - vPrevY;
 		dvz = vZ - vPrevZ;
+		
 //		Log.d("Acceleration", "vX = " + vX + ", vY = " + vY + ", vZ = " + vZ);
 	}
 	
@@ -326,7 +452,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		System.gc();
 		if(mSensorManager != null) {
 			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-			this.enableAccelerationSensor(this);
+//			this.enableAccelerationSensor(this);
 		}
 		
 	}
@@ -336,7 +462,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		Log.d("debug", "masuk PlayScene.onPause");
 		super.onPause();
 		mSensorManager.unregisterListener(this);
-		this.disableAccelerationSensor();
+//		this.disableAccelerationSensor();
 	}
 	
 	@Override
