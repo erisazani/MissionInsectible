@@ -9,6 +9,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
@@ -42,7 +43,8 @@ public class PlayScene extends Scene {
 		Text countDown = new Text(10,10, activity.time ,"10", activity.getVertexBufferObjectManager());
 		attachChild(countDown);
 		
-		
+		AnimatedSprite bee = new AnimatedSprite(activity.getCameraWidth(), activity.getCameraHeight(), activity.beeTiledTextureRegion, activity.getVertexBufferObjectManager());
+		bee.animate(100);
 //		final float centerX = (activity.mCamera.getWidth() - activity.mFaceTextureRegion.getWidth()) / 2;
 //		final float centerY = (activity.mCamera.getHeight() - activity.mFaceTextureRegion.getHeight()) / 2;
 //		//final Sprite face = new Sprite(centerX, centerY, activity.mFaceTextureRegion, activity.getVertexBufferObjectManager());
