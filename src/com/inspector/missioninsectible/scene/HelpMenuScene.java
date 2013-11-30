@@ -14,10 +14,11 @@ public class HelpMenuScene extends Scene{
 	public HelpMenuScene(){
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		
-		Sprite HowToBoard = new Sprite(activity.getCameraWidth() / 2 - activity.mBoardHowToTexture.getWidth()/2 , activity.getCameraHeight() / 2 - activity.mBoardHowToTexture.getHeight()/2, activity.mBoardHowToTexture, activity.getVertexBufferObjectManager());
+		Sprite HowToBoard = new Sprite(activity.getCameraWidth() / 2, activity.getCameraHeight() / 2, activity.mHowToBoardTextureRegion, activity.getVertexBufferObjectManager());
+		HowToBoard.setSize(activity.getCameraWidth(), activity.getCameraHeight());
 		attachChild(HowToBoard);
 		
-		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2 - activity.mHomeGalleryTexture.getWidth()/2 , activity.getCameraHeight()- activity.mBoardHowToTexture.getHeight()/2 - 5, activity.mHomeGalleryTexture, activity.getVertexBufferObjectManager(), new OnClickListener() {
+		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth()/2,activity.mHomeTextureRegion.getHeight()/2, activity.mHomeTextureRegion, activity.getVertexBufferObjectManager(), new OnClickListener() {
 			
 			@Override
 			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
@@ -26,6 +27,7 @@ public class HelpMenuScene extends Scene{
 				 activity.setCurrentScene(new MainMenuScene());
 			}
 		});
+		HomeMenuItem.setSize(30, 30);
 		registerTouchArea(HomeMenuItem);
 		attachChild(HomeMenuItem);
 		

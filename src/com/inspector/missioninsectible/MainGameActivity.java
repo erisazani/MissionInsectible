@@ -32,11 +32,11 @@ import android.graphics.Typeface;
 import android.util.Log;
 
 public class MainGameActivity extends SimpleBaseGameActivity {
-	static final int CAMERA_WIDTH = 854;
-	static final int CAMERA_HEIGHT = 480;
-	
-	static final int CAMERA_WIDTH2 = 320;
-	static final int CAMERA_HEIGHT2 = 240;
+//	static final int CAMERA_WIDTH = 854;
+//	static final int CAMERA_HEIGHT = 480;
+//	
+	static final int CAMERA_WIDTH = 320;
+	static final int CAMERA_HEIGHT = 240;
 	
 	private static final int LAYER_BACKGROUND = 0;
 	
@@ -45,8 +45,8 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	
 	private Scene mScene;
 	public Scene mCurrentScene;
-	private BitmapTextureAtlas mBackgroundTexture;
-	public TextureRegion mBackgroundTextureRegion;
+	private BitmapTextureAtlas mLogoTexture;
+	public TextureRegion mLogoTextureRegion;
 	public static MainGameActivity instance;
 
 	private BitmapTextureAtlas mMenuTexture;
@@ -62,23 +62,22 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 //	public ITexture mFaceTexture;
 //	public ITextureRegion mFaceTextureRegion;
 	
-	private BitmapTextureAtlas mAboutTexture;
-	public TextureRegion mBoardAboutTexture;
-	public TextureRegion mHomeGalleryTexture;
+	private BitmapTextureAtlas mAboutBoardTexture;
+	public TextureRegion mAboutBoardTextureRegion;
+	public TextureRegion mHomeTextureRegion;
 	
-	private BitmapTextureAtlas mGalleryTexture;
-	public TextureRegion mBoardGalleryTexture;
+	private BitmapTextureAtlas mGalleryBoardTexture;
+	public TextureRegion mGalleryBoardTextureRegion;
 	
-	private BitmapTextureAtlas mHowToTexture;
-	public TextureRegion mBoardHowToTexture;
-	public TextureRegion mHomeHowToTexture;
+	private BitmapTextureAtlas mHowToBoardTexture;
+	public TextureRegion mHowToBoardTextureRegion;
 	
-	private BitmapTextureAtlas mHiScoreTexture;
-	public TextureRegion mBoardHiScoreTexture;
+	private BitmapTextureAtlas mHiScoreBoardTexture;
+	public TextureRegion mBoardHiScoreTextureRegion;
 	
-	private BitmapTextureAtlas mBattleTexture;
-	public TextureRegion mBoardBattleTexture;
-	public TextureRegion mPlayBattleTexture;
+	private BitmapTextureAtlas mBattleBoardTexture;
+	public TextureRegion mBattleBoardTextureRegion;
+	public TextureRegion mPlayBattleTextureRegion;
 
 	private BitmapTextureAtlas mLoadScreenBGTexture;
 	public TextureRegion mLoadScreenBGRegion;
@@ -87,13 +86,16 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	public TextureRegion greyButterfly;
 	public TextureRegion greyDragonfly;
 	public TextureRegion greyBee;
+	private BitmapTextureAtlas mBackgroundTexture;
+	private BitmapTextureAtlas mBoardTexture;
+	private BitmapTextureAtlas mHomeButtonTexture;
+
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// TODO Auto-generated method stub
 		instance = this;
 		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		
 		final EngineOptions engineOptions = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
 //	//	final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
@@ -116,65 +118,74 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		
 //			for splash scene
-			this.mBackgroundTexture = new BitmapTextureAtlas(this.getTextureManager(), CAMERA_WIDTH, CAMERA_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBackgroundTexture, this, "Splash.png", 0, 0);
-			this.mBackgroundTexture.load();
+			this.mLogoTexture = new BitmapTextureAtlas(this.getTextureManager(), 200, 200, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mLogoTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mLogoTexture, this, "logo.png", 0, 0);
+			this.mLogoTexture.load();
 
 //			for Main Menu
-			this.mMenuTexture = new BitmapTextureAtlas(this.getTextureManager(), CAMERA_WIDTH, CAMERA_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mMenuBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Splash.png", 0, 0);	
+			this.mMenuTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 			this.mMenuPlayTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-play.png", 0, 0);
-			this.mMenuBattleTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-battle.png", 0, 50);
-			this.mMenuGalleryTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-gallery.png", 0, 100);
-			this.mMenuScoreTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-hiscore.png", 0, 150);
-			this.mMenuHowToTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-howto.png", 0, 200);
-			this.mMenuAboutTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-about.png", 0, 250);
-			this.mMenuQuitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-quit.png", 0, 300);	
+			this.mMenuBattleTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-battle.png", 0, 45);
+			this.mMenuGalleryTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-gallery.png", 0, 90);
+			this.mMenuScoreTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-hiscore.png", 0, 135);
+			this.mMenuHowToTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-howto.png", 105, 0);
+			this.mMenuAboutTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-about.png", 105, 45);
+			this.mMenuQuitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-quit.png", 105, 90);	
 			this.mMenuTexture.load();
 			
+			this.mBackgroundTexture = new BitmapTextureAtlas(this.getTextureManager(), CAMERA_WIDTH, CAMERA_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mMenuBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBackgroundTexture, this, "Splash_fix.png", 0, 0);	
+			this.mBackgroundTexture.load();
+			
+			
+			// atlas for board
+			this.mBattleBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mGalleryBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mHiScoreBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mAboutBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mHowToBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			
+			//atlas for insect
+			this.mInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			// atlas for button
+			this.mHomeButtonTexture = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			
 //			for Battle Menu
-			this.mBattleTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBoardBattleTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBattleTexture, this, "Battle_Board.png",0,0);
-			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBattleTexture, this, "Functional_button_home.png", 410, 0);
-			this.mPlayBattleTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBattleTexture, this, "Functional_button_play.png", 410, 0);
-			this.mBattleTexture.load();
+			this.mBattleBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBattleBoardTexture, this, "Battle_Board.png",0,0);
+			
+			this.mBattleBoardTexture.load();
 			
 //			for Gallery Menu
-			this.mGalleryTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBoardGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryTexture, this, "Gallery_Board.png",0,0);
-			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryTexture, this, "Functional_button_home.png", 410, 0);
-			this.mGalleryTexture.load();
-			this.mInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mGalleryBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryBoardTexture, this, "Gallery_Board.png",0,0);
+			this.mGalleryBoardTexture.load();
 			this.greyButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "butterfly-grey.png",0,0);
 			this.greyDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "dragonfly-grey.png",90,0);
 			this.greyBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "bee-grey.png",180,0);
 			this.mInsectTexture.load();
+
+			// for button
+			this.mHomeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_home.png", 0, 0);
+			this.mPlayBattleTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_play.png", 0, 55);
 			
-//			for HiScore Menu
-			this.mHiScoreTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBoardHiScoreTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHiScoreTexture, this, "Hiscore_Board.png",0,0);
-			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHiScoreTexture, this, "Functional_button_home.png", 410, 0);
-			this.mHiScoreTexture.load();
+			//	for HiScore Menu
+			this.mBoardHiScoreTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHiScoreBoardTexture, this, "Hiscore_Board.png",0,0);
+		
+			
+			this.mHiScoreBoardTexture.load();
+			this.mHomeButtonTexture.load();
 
 //			for HowTo Menu
-			this.mHowToTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBoardHowToTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHowToTexture, this, "Howto_Board.png",0,0);
-			this.mHomeHowToTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHowToTexture, this, "Functional_button_home.png", 410, 0);
-			this.mHowToTexture.load();
+			this.mHowToBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHowToBoardTexture, this, "Howto_Board.png",0,0);
+			this.mHowToBoardTexture.load();
 
 //			for About Menu
-			this.mAboutTexture = new BitmapTextureAtlas(this.getTextureManager(), 500, 400, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-			this.mBoardAboutTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAboutTexture, this, "About_Board.png",0,0);
-			this.mHomeGalleryTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAboutTexture, this, "Functional_button_home.png", 410, 0);
-			this.mAboutTexture.load();
+			this.mAboutBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAboutBoardTexture, this, "About_Board.png",0,0);
+			this.mAboutBoardTexture.load();
 			
 //			for Loading Scene
 			this.mLoadScreenBGTexture = new BitmapTextureAtlas(this.getTextureManager() ,300,150, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
             this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
             this.mLoadScreenBGTexture.load();
-            
-            this.time =  FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), 32, Color.WHITE);
-            this.time.load();
             
 //		} catch (IOException e) {
 //			e.printStackTrace();

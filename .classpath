@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry exported="true" kind="lib" path="D:/adt-bundle-windows-x86+package/AndEngine + Extensions/AndEngine/bin/andengine.jar" sourcepath="/AndEngine/src"/>
+	<classpathentry exported="true" kind="lib" path="D:/adt-bundle-windows-x86+package/AndEngine-GLES2-AnchorCenter/bin/andengine.jar" sourcepath="/AndEngine/src"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

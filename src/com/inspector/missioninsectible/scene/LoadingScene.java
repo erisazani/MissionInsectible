@@ -16,10 +16,8 @@ public class LoadingScene extends Scene {
 		activity = MainGameActivity.getSharedInstance();
 		
 		setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
-		final float centerX = (activity.mCamera.getWidth() - activity.mLoadScreenBGRegion.getWidth()) / 2;
-		final float centerY = (activity.mCamera.getHeight() - activity.mLoadScreenBGRegion.getHeight()) / 2;
-		Sprite background = new Sprite(centerX,centerY, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
-		//background.setSize(activity.getCameraWidth(), activity.getCameraHeight());
+		Sprite background = new Sprite(activity.getCameraWidth()/2,activity.getCameraHeight()/2, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
+		background.setSize(activity.mLoadScreenBGRegion.getWidth()/2, activity.mLoadScreenBGRegion.getHeight()/2);
 		attachChild(background);
 	
 		startGame();
@@ -32,7 +30,7 @@ public class LoadingScene extends Scene {
 		DelayModifier dMod = new DelayModifier(4){
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
-			        activity.setCurrentScene(new PlayScene());
+			        activity.setCurrentScene(new MainMenuScene());
 			    }
 			};
 			

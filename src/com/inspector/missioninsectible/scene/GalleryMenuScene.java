@@ -15,20 +15,23 @@ public class GalleryMenuScene extends Scene {
 
 		activity = MainGameActivity.getSharedInstance();
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
-		Sprite GalleryBoard = new Sprite(0, 0, activity.mBoardGalleryTexture, activity.getVertexBufferObjectManager());
+		Sprite GalleryBoard = new Sprite(activity.getCameraWidth() / 2, activity.getCameraHeight()/2, activity.mGalleryBoardTextureRegion, activity.getVertexBufferObjectManager());
 		GalleryBoard.setSize(activity.getCameraWidth(), activity.getCameraHeight());
 		attachChild(GalleryBoard);
 		
-		final Sprite lockedButterfly = new Sprite(120, activity.getCameraHeight()/3, activity.greyButterfly, activity.getVertexBufferObjectManager());
+		final Sprite lockedButterfly = new Sprite(activity.getCameraWidth()/4 - 20, activity.getCameraHeight()/2 + 30, activity.greyButterfly, activity.getVertexBufferObjectManager());
+		lockedButterfly.setSize(30,30);
 		attachChild(lockedButterfly);
 		
-		final Sprite lockedDragonfly = new Sprite(210, activity.getCameraHeight()/3, activity.greyDragonfly, activity.getVertexBufferObjectManager());
+		final Sprite lockedDragonfly = new Sprite(activity.getCameraWidth()/4 + 30, activity.getCameraHeight()/2 + 30, activity.greyDragonfly, activity.getVertexBufferObjectManager());
+		lockedDragonfly.setSize(30,30);
 		attachChild(lockedDragonfly);
 		
-		final Sprite lockedBee = new Sprite(300, activity.getCameraHeight()/3, activity.greyBee, activity.getVertexBufferObjectManager());
+		final Sprite lockedBee = new Sprite(activity.getCameraWidth()/4 - 20, activity.getCameraHeight()/2 - 5, activity.greyBee, activity.getVertexBufferObjectManager());
+		lockedBee.setSize(30,30);
 		attachChild(lockedBee);
 		
-		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2 - activity.mHomeGalleryTexture.getWidth()/2 , activity.getCameraHeight()- activity.mBoardGalleryTexture.getHeight()/2 - 5, activity.mHomeGalleryTexture, activity.getVertexBufferObjectManager(), new OnClickListener() {
+		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2, activity.mHomeTextureRegion.getHeight()/2, activity.mHomeTextureRegion, activity.getVertexBufferObjectManager(), new OnClickListener() {
 			
 			@Override
 			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
@@ -37,6 +40,7 @@ public class GalleryMenuScene extends Scene {
 				 activity.setCurrentScene(new MainMenuScene());
 			}
 		});
+		HomeMenuItem.setSize(30, 30);
 		registerTouchArea(HomeMenuItem);
 		attachChild(HomeMenuItem);
 		

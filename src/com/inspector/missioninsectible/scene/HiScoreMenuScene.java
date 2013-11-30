@@ -14,10 +14,11 @@ public class HiScoreMenuScene extends Scene {
 	public HiScoreMenuScene(){
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		
-		Sprite HiScoreBoard = new Sprite(activity.getCameraWidth() / 2 - activity.mBoardHiScoreTexture.getWidth()/2 , activity.getCameraHeight() / 2 - activity.mBoardHiScoreTexture.getHeight()/2, activity.mBoardHiScoreTexture, activity.getVertexBufferObjectManager());
+		final Sprite HiScoreBoard = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, activity.mBoardHiScoreTextureRegion, activity.getVertexBufferObjectManager());
+		HiScoreBoard.setSize(activity.getCameraWidth(), activity.getCameraHeight());
 		attachChild(HiScoreBoard);
 		
-		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth() / 2 - activity.mHomeGalleryTexture.getWidth()/2 , activity.getCameraHeight()- activity.mBoardHowToTexture.getHeight()/2 - 5, activity.mHomeGalleryTexture, activity.getVertexBufferObjectManager(), new OnClickListener() {
+		final Sprite HomeMenuItem = new ButtonSprite(activity.getCameraWidth()/2,activity.mHomeTextureRegion.getHeight()/2, activity.mHomeTextureRegion, activity.getVertexBufferObjectManager(), new OnClickListener() {
 			
 			@Override
 			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
@@ -26,6 +27,7 @@ public class HiScoreMenuScene extends Scene {
 				 activity.setCurrentScene(new MainMenuScene());
 			}
 		});
+		HomeMenuItem.setSize(30, 30);
 		registerTouchArea(HomeMenuItem);
 		attachChild(HomeMenuItem);
 		

@@ -3,7 +3,10 @@ package com.inspector.missioninsectible.scene;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
+
+import android.graphics.Color;
 
 import com.inspector.missioninsectible.MainGameActivity;
 
@@ -14,10 +17,10 @@ public class SplashScene extends Scene {
 		activity = MainGameActivity.getSharedInstance();
 		
 		
-		setBackgroundEnabled(false);
-		Sprite background = new Sprite(0,0, activity.mBackgroundTextureRegion, activity.getVertexBufferObjectManager());
-		background.setSize(activity.getCameraWidth(), activity.getCameraHeight());
-		attachChild(background);
+		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
+		Sprite logo = new Sprite((activity.getCameraWidth())/2,(activity.getCameraHeight())/2, activity.mLogoTextureRegion, activity.getVertexBufferObjectManager());
+		//logo.setSize(activity.getCameraWidth(), activity.getCameraHeight());
+		attachChild(logo);
 	
 		loadResources();
 		 
