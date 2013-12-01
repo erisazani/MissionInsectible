@@ -7,9 +7,10 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.vbo.ITiledSpriteVertexBufferObject;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
+import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-public class Insect extends Sprite {
+public class Insect extends AnimatedSprite {
 
 	public static final int BEETLE = 1;
 	public static final int LADYBUG = 2;
@@ -73,13 +74,14 @@ public class Insect extends Sprite {
 	private int spawnTime;
 	private float speed;
 	
-	public Insect(float initX, float initY, ITextureRegion textureRegion, VertexBufferObjectManager vbmo, int type) {
+	public Insect(float initX, float initY, TiledTextureRegion textureRegion, VertexBufferObjectManager vbmo, int type) {
 		super(initX, initY, textureRegion, vbmo);
 		this.type = type;
 		this.name = Insect.INSECT_NAME[type];
 		this.score = Insect.INSECT_SCORE[type];
 		this.spawnTime = Insect.SPAWN_TIME[type];
 		this.speed = Insect.INSECT_SPEED[type];
+		animate(100);
 	}
 	
 	public int getType() {
