@@ -2,6 +2,8 @@ package com.inspector.missioninsectible;
 
 import java.io.IOException;
 
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
 //import org.andengine.engine.options.ConfigChooserOptions;
 import org.andengine.engine.options.EngineOptions;
@@ -30,12 +32,14 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 
+import com.inspector.missioninsectible.scene.MainMenuScene;
 import com.inspector.missioninsectible.scene.PlayScene;
 import com.inspector.missioninsectible.scene.SplashScene;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.view.KeyEvent;
 
 public class MainGameActivity extends SimpleBaseGameActivity {
 //	static final int CAMERA_WIDTH = 854;
@@ -51,6 +55,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	
 	private Scene mScene;
 	public Scene mCurrentScene;
+	public Scene mLastScene;
 	private BitmapTextureAtlas mLogoTexture;
 	public TextureRegion mLogoTextureRegion;
 	public static MainGameActivity instance;
@@ -95,9 +100,11 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mBackgroundTexture;
 	private BitmapTextureAtlas mBoardTexture;
 	private BitmapTextureAtlas mHomeButtonTexture;
+	
 	private BitmapTextureAtlas mSoundButtonTexture;
 	private TextureRegion SoundOnTextureRegion;
 	private TextureRegion SoundOffTextureRegion;
+	
 	private BuildableBitmapTextureAtlas beeTexture;
 	public TiledTextureRegion beeTiledTextureRegion;
 	private BuildableBitmapTextureAtlas dragonflyTexture;
@@ -106,6 +113,16 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	public TiledTextureRegion butterflyTiledTextureRegion;
 	private BuildableBitmapTextureAtlas ladybugTexture;
 	public TiledTextureRegion ladybugTiledTextureRegion;
+	
+	private Sound mBackgroundSound;
+	
+	private BitmapTextureAtlas crosshairTexture;
+	public TextureRegion crosshairBasicTextureRegion;
+	public TextureRegion crosshairFullTextureRegion;
+	private BitmapTextureAtlas pauseGameTexture;
+	public TextureRegion pauseGameTextureRegion;
+	public TextureRegion mPauseTextureRegion;
+	public TextureRegion mReplayTextureRegion;
 
 
 	@Override
@@ -188,6 +205,8 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			// for button
 			this.mHomeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_home.png", 0, 0);
 			this.mPlayBattleTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_play.png", 0, 55);
+			this.mPauseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_pause.png", 55, 0);
+			this.mReplayTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_replay.png", 55, 55);
 			
 			//	for HiScore Menu
 			this.mBoardHiScoreTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHiScoreBoardTexture, this, "Hiscore_Board.png",0,0);
@@ -208,28 +227,48 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			this.mLoadScreenBGTexture = new BitmapTextureAtlas(this.getTextureManager() ,300,150, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
             this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
             this.mLoadScreenBGTexture.load();
-            
- this.beeTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
- this.beeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beeTexture, this, "bee-tiled.png", 3,1);
- this.dragonflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
- this.dragonflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(dragonflyTexture, this, "dragonfly-tiled.png", 3,1);
- this.butterflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
- this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTexture, this, "butterfly-tiled.png", 2,1);
- this.ladybugTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
- this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTexture, this, "ladybug-tiled.png", 2,1);
+       
+            // for animated insect            
+            this.beeTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+            this.beeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beeTexture, this, "bee-tiled.png", 3,1);
+            this.dragonflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+			this.dragonflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(dragonflyTexture, this, "dragonfly-tiled.png", 3,1);
+			this.butterflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+			this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTexture, this, "butterfly-tiled.png", 2,1);
+			this.ladybugTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+			this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTexture, this, "ladybug-tiled.png", 2,1);
+			
+			//for crosshair
+			this.crosshairTexture = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.crosshairBasicTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(crosshairTexture, this, "crosshair_basic.png",0,0);
+			this.crosshairFullTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(crosshairTexture, this, "crosshair_full.png",55,0);
+			this.crosshairTexture.load();
+			
+			//for pause game
+			this.pauseGameTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.pauseGameTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(pauseGameTexture, this, "pauseGame.png",0,0);
+			this.pauseGameTexture.load();
 
- try {
-		this.beeTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-		this.beeTexture.load();
-		this.dragonflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-		this.dragonflyTexture.load();
-		this.butterflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-		this.butterflyTexture.load();
-		this.ladybugTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-		this.ladybugTexture.load();
-	} catch (TextureAtlasBuilderException e) {
-		Debug.e(e);
-	}       
+			try {
+				this.beeTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+				this.beeTexture.load();
+				this.dragonflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+				this.dragonflyTexture.load();
+				this.butterflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+				this.butterflyTexture.load();
+				this.ladybugTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+				this.ladybugTexture.load();
+			} 
+			catch (TextureAtlasBuilderException e) {
+					Debug.e(e);
+			}
+						
+			// 		SoundFactory.setAssetBasePath("mfx/");
+// 		try {
+// 			this.mBackgroundSound = SoundFactory.createSoundFromAsset(this.getSoundManager(), this, "explosion.ogg");
+// 		} catch (final IOException e) {
+//		Debug.e(e);
+// 		}
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //			Log.d("Texture", "Texture Not Loaded");
@@ -242,8 +281,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	@Override
 	protected Scene onCreateScene() {
 		mEngine.registerUpdateHandler(new FPSLogger());
-		mCurrentScene = new SplashScene();
-		
+		mCurrentScene = new SplashScene();		
 		  return mCurrentScene;
 	}
 

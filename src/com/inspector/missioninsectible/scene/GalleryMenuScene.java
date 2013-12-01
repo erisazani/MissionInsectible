@@ -6,6 +6,8 @@ import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 
+import android.view.KeyEvent;
+
 import com.inspector.missioninsectible.MainGameActivity;
 
 public class GalleryMenuScene extends Scene {
