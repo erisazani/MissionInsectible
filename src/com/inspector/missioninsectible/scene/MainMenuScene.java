@@ -64,7 +64,7 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 		quitMenuItem.setSize(80, 35);
 		addMenuItem(quitMenuItem);
 		
-		final Sprite soundOn =  new Sprite(activity.getCameraWidth(), activity.getCameraHeight(), mSound, pVertexBufferObject)
+//		final Sprite soundOn =  new Sprite(activity.getCameraWidth(), activity.getCameraHeight(), activity.s, activity);
 
 
 		//buildAnimations();

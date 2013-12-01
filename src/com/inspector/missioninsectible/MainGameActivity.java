@@ -18,12 +18,17 @@ import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
+import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.bitmap.AssetBitmapTexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.debug.Debug;
 
 import com.inspector.missioninsectible.scene.PlayScene;
 import com.inspector.missioninsectible.scene.SplashScene;
@@ -93,8 +98,14 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mSoundButtonTexture;
 	private TextureRegion SoundOnTextureRegion;
 	private TextureRegion SoundOffTextureRegion;
-	private BitmapTextureAtlas beeTexture;
+	private BuildableBitmapTextureAtlas beeTexture;
 	public TiledTextureRegion beeTiledTextureRegion;
+	private BuildableBitmapTextureAtlas dragonflyTexture;
+	public TiledTextureRegion dragonflyTiledTextureRegion;
+	private BuildableBitmapTextureAtlas butterflyTexture;
+	public TiledTextureRegion butterflyTiledTextureRegion;
+	private BuildableBitmapTextureAtlas ladybugTexture;
+	public TiledTextureRegion ladybugTiledTextureRegion;
 
 
 	@Override
@@ -198,9 +209,27 @@ public class MainGameActivity extends SimpleBaseGameActivity {
             this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
             this.mLoadScreenBGTexture.load();
             
- this.beeTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
- this.beeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beeTexture, this, "bee-tiled.png", 0,0,1, 2);
-            
+ this.beeTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+ this.beeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beeTexture, this, "bee-tiled.png", 3,1);
+ this.dragonflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+ this.dragonflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(dragonflyTexture, this, "dragonfly-tiled.png", 3,1);
+ this.butterflyTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+ this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTexture, this, "butterfly-tiled.png", 2,1);
+ this.ladybugTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+ this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTexture, this, "ladybug-tiled.png", 2,1);
+
+ try {
+		this.beeTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+		this.beeTexture.load();
+		this.dragonflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+		this.dragonflyTexture.load();
+		this.butterflyTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+		this.butterflyTexture.load();
+		this.ladybugTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+		this.ladybugTexture.load();
+	} catch (TextureAtlasBuilderException e) {
+		Debug.e(e);
+	}       
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //			Log.d("Texture", "Texture Not Loaded");

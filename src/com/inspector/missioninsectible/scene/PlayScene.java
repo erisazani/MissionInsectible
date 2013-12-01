@@ -36,20 +36,32 @@ public class PlayScene extends Scene {
 	MainGameActivity activity;
 	
 	public PlayScene() {
-		super();
+//		super();
 		activity = MainGameActivity.getSharedInstance();
 		
 		setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
-		Text countDown = new Text(10,10, activity.time ,"10", activity.getVertexBufferObjectManager());
-		attachChild(countDown);
+//		Text countDown = new Text(10,10, activity.time ,"10", activity.getVertexBufferObjectManager());
+//		attachChild(countDown);
+//		
+		final AnimatedSprite bee = new AnimatedSprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, activity.beeTiledTextureRegion, activity.getVertexBufferObjectManager());
+		bee.setSize(40, 40);
+		bee.animate(50);
+		attachChild(bee);
 		
-		AnimatedSprite bee = new AnimatedSprite(activity.getCameraWidth(), activity.getCameraHeight(), activity.beeTiledTextureRegion, activity.getVertexBufferObjectManager());
-		bee.animate(100);
-//		final float centerX = (activity.mCamera.getWidth() - activity.mFaceTextureRegion.getWidth()) / 2;
-//		final float centerY = (activity.mCamera.getHeight() - activity.mFaceTextureRegion.getHeight()) / 2;
-//		//final Sprite face = new Sprite(centerX, centerY, activity.mFaceTextureRegion, activity.getVertexBufferObjectManager());
-//		face.registerEntityModifier(new MoveModifier(30, 0, 320 - face.getWidth(), 0, 240 - face.getHeight()));
-//		attachChild(face);
+		final AnimatedSprite dragonfly = new AnimatedSprite(activity.getCameraWidth()/4, activity.getCameraHeight()/2, activity.dragonflyTiledTextureRegion, activity.getVertexBufferObjectManager());
+		dragonfly.setSize(40, 40);
+		dragonfly.animate(50);
+		attachChild(dragonfly);
+		
+		final AnimatedSprite butterfly = new AnimatedSprite(activity.getCameraWidth()*3/4, activity.getCameraHeight()/2, activity.butterflyTiledTextureRegion, activity.getVertexBufferObjectManager());
+		butterfly.setSize(40, 40);
+		butterfly.animate(120);
+		attachChild(butterfly);
+		
+		final AnimatedSprite ladybug = new AnimatedSprite(activity.getCameraWidth()*3/4, activity.getCameraHeight()/4, activity.ladybugTiledTextureRegion, activity.getVertexBufferObjectManager());
+		ladybug.setSize(40, 40);
+		ladybug.animate(120);
+		attachChild(ladybug);
 	}
 
 }

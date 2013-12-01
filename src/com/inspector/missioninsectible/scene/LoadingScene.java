@@ -30,7 +30,7 @@ public class LoadingScene extends Scene {
 		DelayModifier dMod = new DelayModifier(4){
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
-			        activity.setCurrentScene(new MainMenuScene());
+			        activity.setCurrentScene(new PlayScene());
 			    }
 			};
 			
