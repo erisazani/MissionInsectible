@@ -98,12 +98,17 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private Sprite basicCrosshair;
 	private Sprite fullCrosshair;
 	
-	// pause button
+	// pause feature
 	private BitmapTextureAtlas pauseButtonTexture;
 	private TextureRegion pauseButtonTextureRegion;
 	private BitmapTextureAtlas pauseGameTexture;
 	private TextureRegion pauseGameTextureRegion;
-	private Sprite pauseBoard; 
+	private Sprite pauseBoard;
+	
+	// result board
+	private BitmapTextureAtlas resultBoardTexture;
+	private TextureRegion resultBoardTextureRegion;
+	private Sprite resultBoard;
 	
 	private int beetle,ladybug,grasshopper,butterfly,honeyBee,goldenDragonfly,timeInsect;
 	private float accX, accY, accZ, accPrevX, accPrevY, accPrevZ, dx, dy, dz;
@@ -127,10 +132,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	private Text mText;
 	private int countSec = 10;
-	private int gameSec = 60;
+	private int gameSec = 15;
 	private int totalSec = gameSec;
 	private boolean gameStart = false;
 	private boolean isPausing = false;
+	private boolean gameOver = false;
 	
 	private boolean isCatching;
 	
@@ -226,6 +232,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.pauseButtonTexture.load();
 		this.pauseGameTexture.load();
 		
+		//for result board
+		this.resultBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.resultBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(resultBoardTexture, this, "gfx/Result_Board.png",0,0);		
+		this.resultBoardTexture.load();
+		
 		beetleTexture.load();
 		ladybugTexture.load();
 		grasshopperTexture.load();
@@ -265,6 +276,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		rect = new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2, 5.0f, 5.0f, activity.getVertexBufferObjectManager());
 		rect.setVisible(false);
 
+		// crosshair
 		basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
 		fullCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairFullTextureRegion, activity.getVertexBufferObjectManager());
 		
@@ -287,6 +299,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				}
 		);
 		
+		// pause board
 		pauseBoard = new ButtonSprite(
 				activity.getCameraWidth()/2, 
 				activity.getCameraHeight()/2, 
@@ -303,6 +316,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						gameScene.unregisterTouchArea(pauseBoard);
 					}
 				}
+		);
+		
+		// result board
+		resultBoard = new Sprite(
+				activity.getCameraWidth()/2, 
+				activity.getCameraHeight()/2, 
+				resultBoardTextureRegion, 
+				activity.getVertexBufferObjectManager()
 		);
 		
 		Random r = new Random();
@@ -337,7 +358,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		// time handler untuk countdown time limit saat permainan
 		this.mEngine.registerUpdateHandler(new TimerHandler(1, true, new ITimerCallback() {
 	        public void onTimePassed(TimerHandler pTimerHandler) {
-	            if(!isPausing){
+	            if(!isPausing && !gameOver){
 	            	if(gameStart) { 
 		            	gameSec--;
 		            	mText.setText("" + gameSec);
@@ -347,6 +368,13 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		            	gameStart = false;
 		            	printScore(score);
 		            	mText.setText("0");
+		            	
+		            	// done if it is a game over
+		            	gameOver = true;
+		            	resultBoard.setVisible(true);
+		            	gameScene.detachChild(insect);
+		            	gameScene.unregisterTouchArea(pauseBoard);		            	
+		            	
 		            	mEngine.unregisterUpdateHandler(pTimerHandler);
 		            }
 	            }
@@ -356,7 +384,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		// update handler untuk atur posisi sprite selama permainan
 		this.mEngine.registerUpdateHandler(new IUpdateHandler() {
             public void onUpdate(float pSecondsElapsed) {
-	            if(!isPausing && gameStart) {
+	            if(!isPausing && !gameOver && gameStart) {
 	            	updateSpritePosition();
 	            	removeOutlyingInsects();
 	            	catchInsects();
@@ -378,11 +406,15 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		gameScene.attachChild(scoreLblText);
 		gameScene.attachChild(scoreText);
 		gameScene.attachChild(comboText);
+		
 		gameScene.attachChild(pauseButton);
 		gameScene.registerTouchArea(pauseButton);
-		gameScene.attachChild(pauseBoard);
 		
+		gameScene.attachChild(pauseBoard);
 		pauseBoard.setVisible(false);
+		
+		gameScene.attachChild(resultBoard);
+		resultBoard.setVisible(false);
 		
 		return gameScene;
 	}
@@ -477,10 +509,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 		}
 	}
-		
-	/**
-	 * Ini masih gak pas..............
-	 */
+	
 	public void updateSpritePosition() {
 		if(accY < -1.0f) {
 			if(accZ < -1.0f) {
@@ -639,6 +668,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected void onDestroy()
 	{
 		Log.d("debug", "masuk PlayScene.onDestroy");
+		gameScene.detachChild(insect);
 		super.onDestroy();
 	        
 	    if (this.isGameLoaded())
