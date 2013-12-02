@@ -97,6 +97,9 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mBoardTexture;
 	private BitmapTextureAtlas mHomeButtonTexture;
 	
+	private BitmapTextureAtlas mGreyInsectTexture;
+	private BitmapTextureAtlas mColoredInsectTexture;
+	
 //	public Camera mCamera;
 //	
 //	private Scene mScene;
@@ -159,7 +162,9 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		this.mHowToBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		
 		//atlas for insect
-		this.mInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mGreyInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 300, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mColoredInsectTexture = new BitmapTextureAtlas(this.getTextureManager(), 420, 300, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		
 		// atlas for button
 		this.mHomeButtonTexture = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		
@@ -171,21 +176,26 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 //		for Gallery Menu
 		this.mGalleryBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGalleryBoardTexture, this, "Gallery_Board.png",0,0);
 		this.mGalleryBoardTexture.load();
-		this.greyBeetle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "beetle-grey.png",180,0);
-		this.greyLadybug = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "ladybug-grey.png",180,0);
-		this.greyGrasshopper = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "grasshopper-grey.png",180,0);
-		this.greyButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "butterfly-grey.png",180,0);
-		this.greyDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "dragonfly-grey.png",90,0);
-		this.greyBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "bee-grey.png",180,0);
-		this.greyTimeInsect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "timeinsect-grey.png",180,0);
-		this.coloredBeetle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "beetle-colored.png",180,0);
-		this.coloredLadybug = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "ladybug-colored.png",180,0);
-		this.coloredGrasshopper = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "grasshopper-colored.png",180,0);
-		this.coloredButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "butterfly-colored.png",180,0);
-		this.coloredDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "dragonfly-colored.png",90,0);
-		this.coloredBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "bee-colored.png",180,0);
-		this.coloredTimeInsect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mInsectTexture, this, "timeinsect-colored.png",180,0);
-		this.mInsectTexture.load();
+
+		this.greyBeetle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "beetle-grey.png",0,0);
+		this.greyLadybug = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "ladybug-grey.png",55,0);
+		this.greyGrasshopper = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "grasshopper-grey.png",115,0);
+		this.greyButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "butterfly-grey.png",0,60);
+		this.greyDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "dragonfly-grey.png",0,150);
+		this.greyBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "bee-grey.png",90,60);
+		this.greyTimeInsect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mGreyInsectTexture, this, "timeinsect-grey.png",90,170);
+		
+		
+		this.coloredBeetle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "beetle-colored.png",0,0);
+		this.coloredLadybug = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "ladybug-colored.png",55,0);
+		this.coloredGrasshopper = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "grasshopper-colored.png",190,0);
+		this.coloredButterfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "butterfly-colored.png",275,0);
+		this.coloredDragonfly = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "dragonfly-colored.png",0,130);
+		this.coloredBee = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "bee-colored.png",130,130);
+		this.coloredTimeInsect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mColoredInsectTexture, this, "timeinsect-colored.png",200,130);
+		
+		this.mGreyInsectTexture.load();
+		this.mColoredInsectTexture.load();
 
 		// for button
 		this.mHomeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mHomeButtonTexture, this, "Functional_button_home.png", 0, 0);

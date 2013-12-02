@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -86,14 +88,21 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private ITextureRegion timeTextureRegion;
 	
 	// animated sprite
+	private BuildableBitmapTextureAtlas beetleTiledTexture;
 	private BuildableBitmapTextureAtlas ladybugTiledTexture;
+	private BuildableBitmapTextureAtlas grasshopperTiledTexture;
 	private BuildableBitmapTextureAtlas butterflyTiledTexture;
 	private BuildableBitmapTextureAtlas beeTiledTexture;
 	private BuildableBitmapTextureAtlas goldenDragonflyTiledTexture;
+	private BuildableBitmapTextureAtlas timeTiledTexture;
+	
+	private TiledTextureRegion beetleTiledTextureRegion;
 	private TiledTextureRegion ladybugTiledTextureRegion;
+	private TiledTextureRegion grasshopperTiledTextureRegion;
 	private TiledTextureRegion butterflyTiledTextureRegion;
 	private TiledTextureRegion beeTiledTextureRegion;
 	private TiledTextureRegion goldenDragonflyTiledTextureRegion;
+	private TiledTextureRegion timeTiledTextureRegion;
 	
 	// crosshair
 	private BitmapTextureAtlas crosshairTexture;
@@ -145,13 +154,15 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	private Text mText;
 	private int countSec = 10;
-	private int gameSec = 15;
+	private int gameSec = 60;
 	private int totalSec = gameSec;
 	private boolean gameStart = false;
 	private boolean isPausing = false;
 	private boolean gameOver = false;
 	
 	private boolean isCatching;
+	
+	private Music music;
 	
 	// dummy variables, delete later
 //	Text xt, yt, zt;
@@ -208,24 +219,38 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		timeTextureRegion = TextureRegionFactory.extractFromTexture(timeTexture);
 		
 		// for animated insect
+		this.beetleTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+		this.beetleTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beetleTiledTexture, this, "gfx/beetle-tiled.png", 3,1);
 		this.ladybugTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 		this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTiledTexture, this, "gfx/ladybug-tiled.png", 2,1);
+		this.grasshopperTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 350, 128, TextureOptions.NEAREST);
+		this.grasshopperTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(grasshopperTiledTexture, this, "gfx/grasshopper-tiled.png", 3,1);
 		this.butterflyTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 		this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTiledTexture, this, "gfx/butterfly-tiled.png", 2,1);
 		this.beeTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
         this.beeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(beeTiledTexture, this, "gfx/bee-tiled.png", 3,1);
         this.goldenDragonflyTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 		this.goldenDragonflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(goldenDragonflyTiledTexture, this, "gfx/dragonfly-tiled.png", 3,1);
+		this.timeTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+		this.timeTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(timeTiledTexture, this, "gfx/clock-tiled.png", 3,1);
+		
 		
 		try {
+			this.beetleTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+			this.beetleTiledTexture.load();
 			this.ladybugTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
 			this.ladybugTiledTexture.load();
+			this.grasshopperTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+			this.grasshopperTiledTexture.load();
 			this.butterflyTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
 			this.butterflyTiledTexture.load();
 			this.beeTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
 			this.beeTiledTexture.load();
 			this.goldenDragonflyTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
 			this.goldenDragonflyTiledTexture.load();
+			this.timeTiledTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+			this.timeTiledTexture.load();
+			
 		} 
 		catch (TextureAtlasBuilderException e) {
 				Debug.e(e);
@@ -286,6 +311,17 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.mEngine.getFontManager().loadFont(mFont);
 		this.mEngine.getFontManager().loadFont(mComboFont);
 		this.mEngine.getFontManager().loadFont(droidFont);
+		
+//		try
+//		{
+//		    music = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"sound/effect/catch_insect.ogg");
+//		    music.setVolume(1.0f);
+//		    this.mEngine.getMusicManager().add(music);
+//		}
+//		catch (IOException e)
+//		{
+//		    e.printStackTrace();
+//		}
 	}
 
 	@Override
@@ -534,6 +570,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						gameScene.detachChild(insect);
 						insect = createInsect();
 						gameScene.attachChild(insect);
+						
+						//mainin sound effect
+//						music.play();
 					} else {
 						Log.d("catch", "amount full");
 					}
@@ -571,15 +610,15 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		switch (type) {
 			case 1: 
 				Log.d("insect", "buat beetle di posisi " + initX + "," + initY); 
-//				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 2: 
 				Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 3: 
 				Log.d("insect", "buat grasshopper di posisi " + initX + "," + initY);
-//				return new Insect(initX, initY, grasshopperTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+				return new Insect(initX, initY, grasshopperTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 4: 
 				Log.d("insect", "buat butterfly di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, butterflyTiledTextureRegion, this.getVertexBufferObjectManager(), type);
@@ -591,11 +630,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				return new Insect(initX, initY, goldenDragonflyTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 7: 
 				Log.d("insect", "buat time insect di posisi " + initX + "," + initY);
-//				return new Insect(initX, initY, timeTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+				return new Insect(initX, initY, timeTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			default: 
-//				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
+//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 		}
 	}
 	
