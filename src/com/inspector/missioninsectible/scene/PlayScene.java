@@ -140,6 +140,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private Text scoreLblText, scoreText, comboText;
 	private Text resultScoreLabelText, resultComboScoreLabelText, resultTotalScoreLabelText;
 	private Text resultScoreText, resultComboScoreText, resultTotalScoreText;
+	private Text scoreSpawnText, comboSpawnText;
 	
 //	private ArrayList<Insect> insects;
 	private Insect insect;
@@ -156,10 +157,12 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private int countSec = 10;
 	private int gameSec = 60;
 	private int totalSec = gameSec;
+	private int scoreSpawnTime = 100;
+	
 	private boolean gameStart = false;
 	private boolean isPausing = false;
 	private boolean gameOver = false;
-	
+	private boolean spawnScore = false;
 	private boolean isCatching;
 	
 	private Music music;
@@ -197,26 +200,26 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	@Override
 	protected void onCreateResources() throws IOException {
 		Log.d("debug", "masuk PlayScene.onCreateResources");
-		try {
-			beetleTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_beetle.png");
-			ladybugTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_ladybug.png");
-			grasshopperTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_grasshopper.png");
-			butterflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_butterfly.png");
-			beeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_bee.png");
-			goldenDragonflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_golden_dragonfly.png");
-			timeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_time.png");
-			Log.d("Texture", "Texture Loaded");
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.d("Texture", "Texture Not Loaded");
-		}
-		beetleTextureRegion = TextureRegionFactory.extractFromTexture(beetleTexture);
-		ladybugTextureRegion = TextureRegionFactory.extractFromTexture(ladybugTexture);
-		grasshopperTextureRegion = TextureRegionFactory.extractFromTexture(grasshopperTexture);
-		butterflyTextureRegion = TextureRegionFactory.extractFromTexture(butterflyTexture);
-		beeTextureRegion = TextureRegionFactory.extractFromTexture(beeTexture);
-		goldenDragonflyTextureRegion = TextureRegionFactory.extractFromTexture(goldenDragonflyTexture);
-		timeTextureRegion = TextureRegionFactory.extractFromTexture(timeTexture);
+//		try {
+//			beetleTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_beetle.png");
+//			ladybugTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_ladybug.png");
+//			grasshopperTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_grasshopper.png");
+//			butterflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_butterfly.png");
+//			beeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_bee.png");
+//			goldenDragonflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_golden_dragonfly.png");
+//			timeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_time.png");
+//			Log.d("Texture", "Texture Loaded");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			Log.d("Texture", "Texture Not Loaded");
+//		}
+//		beetleTextureRegion = TextureRegionFactory.extractFromTexture(beetleTexture);
+//		ladybugTextureRegion = TextureRegionFactory.extractFromTexture(ladybugTexture);
+//		grasshopperTextureRegion = TextureRegionFactory.extractFromTexture(grasshopperTexture);
+//		butterflyTextureRegion = TextureRegionFactory.extractFromTexture(butterflyTexture);
+//		beeTextureRegion = TextureRegionFactory.extractFromTexture(beeTexture);
+//		goldenDragonflyTextureRegion = TextureRegionFactory.extractFromTexture(goldenDragonflyTexture);
+//		timeTextureRegion = TextureRegionFactory.extractFromTexture(timeTexture);
 		
 		// for animated insect
 		this.beetleTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
@@ -275,13 +278,13 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.resultBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(resultBoardTexture, this, "gfx/Result_Board.png",0,0);		
 		this.resultBoardTexture.load();
 		
-		beetleTexture.load();
-		ladybugTexture.load();
-		grasshopperTexture.load();
-		butterflyTexture.load();
-		beeTexture.load();
-		goldenDragonflyTexture.load();
-		timeTexture.load();
+//		beetleTexture.load();
+//		ladybugTexture.load();
+//		grasshopperTexture.load();
+//		butterflyTexture.load();
+//		beeTexture.load();
+//		goldenDragonflyTexture.load();
+//		timeTexture.load();
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mComboFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -331,29 +334,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		// inisialisasi Scene
 		gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
-
-		// text yang muncul di layar
-//		scoreLblText = new Text(50, activity.mCamera.getHeight() - FONT_SIZE / 2, mFont, "Score" , this.mEngine.getVertexBufferObjectManager());
-		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score + " pts", 15, this.mEngine.getVertexBufferObjectManager());
-		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
-		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 3, this.mEngine.getVertexBufferObjectManager());
-		
-		resultScoreLabelText = new Text(activity.mCamera.getWidth()/10*3, activity.mCamera.getHeight()/3*2, droidFont, "Base Score", 10, this.mEngine.getVertexBufferObjectManager());
-		resultComboScoreLabelText = new Text(activity.mCamera.getWidth()/10*7 - 15, activity.mCamera.getHeight()/3*2, droidFont, "Combo Bonus", 11, this.mEngine.getVertexBufferObjectManager());
-		resultTotalScoreLabelText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/10*3 + (int)(1.5 * RESULT_FONT_SIZE), droidFont, "Total Score", 11, this.mEngine.getVertexBufferObjectManager());
-		
-		resultScoreText = new Text(activity.mCamera.getWidth()/10*3, activity.mCamera.getHeight()/3*2 - (int)(1.5 * RESULT_FONT_SIZE), droidFont, "" + score, 10, this.mEngine.getVertexBufferObjectManager());
-		resultComboScoreText = new Text(activity.mCamera.getWidth()/10*7 - 15, activity.mCamera.getHeight()/3*2 - (int)(1.5 * RESULT_FONT_SIZE), droidFont, "" + score, 10, this.mEngine.getVertexBufferObjectManager());
-		resultTotalScoreText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/10*3, droidFont, "" + score, 11, this.mEngine.getVertexBufferObjectManager());
-		
-
-		// rectangle indikator tertangkap
-		rect = new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2, 5.0f, 5.0f, activity.getVertexBufferObjectManager());
-		rect.setVisible(false);
-
-		// crosshair
-		basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
-		fullCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairFullTextureRegion, activity.getVertexBufferObjectManager());
 		
 		// pause button
 		final Sprite pauseButton = new ButtonSprite(
@@ -470,7 +450,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		        		
 		        		gameScene.detachChild(fullCrosshair);
 		        		gameScene.detachChild(basicCrosshair);
-		        		gameScene.detachChild(scoreLblText);
+		        		gameScene.detachChild(scoreSpawnText);
 		        		gameScene.detachChild(scoreText);
 		        		gameScene.detachChild(comboText);
 		            	gameScene.detachChild(insect);
@@ -484,7 +464,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	        }
 	    }));
 
-		// update handler untuk atur posisi sprite selama permainan
+		// update handler untuk update penting selama permainan
 		this.mEngine.registerUpdateHandler(new IUpdateHandler() {
             public void onUpdate(float pSecondsElapsed) {
 	            if(!isPausing && !gameOver && gameStart) {
@@ -492,16 +472,26 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            	removeOutlyingInsects();
 	            	catchInsects();
 	            	updateCrosshairColor();
+	            	showScoreEffect();
 	            }
             }
 
             public void reset() {}
 		});
-
-//		mText.setColor(Color.RED);
-//		scoreLblText.setColor(Color.GREEN);
-//		scoreText.setColor(Color.GREEN);
-//		comboText.setColor(Color.PINK);
+		
+		// text yang muncul di layar
+		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score + " pts", 15, this.mEngine.getVertexBufferObjectManager());
+		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
+		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 3, this.mEngine.getVertexBufferObjectManager());
+		scoreSpawnText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, droidFont, "+" + insect.getScore(), 10, this.mEngine.getVertexBufferObjectManager());
+		
+		resultScoreLabelText = new Text(activity.mCamera.getWidth()/10*3, activity.mCamera.getHeight()/3*2, droidFont, "Base Score", 10, this.mEngine.getVertexBufferObjectManager());
+		resultComboScoreLabelText = new Text(activity.mCamera.getWidth()/10*7 - 15, activity.mCamera.getHeight()/3*2, droidFont, "Combo Bonus", 11, this.mEngine.getVertexBufferObjectManager());
+		resultTotalScoreLabelText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/10*3 + (int)(1.5 * RESULT_FONT_SIZE), droidFont, "Total Score", 11, this.mEngine.getVertexBufferObjectManager());
+		
+		resultScoreText = new Text(activity.mCamera.getWidth()/10*3, activity.mCamera.getHeight()/3*2 - (int)(1.5 * RESULT_FONT_SIZE), droidFont, "" + score, 10, this.mEngine.getVertexBufferObjectManager());
+		resultComboScoreText = new Text(activity.mCamera.getWidth()/10*7 - 15, activity.mCamera.getHeight()/3*2 - (int)(1.5 * RESULT_FONT_SIZE), droidFont, "" + score, 10, this.mEngine.getVertexBufferObjectManager());
+		resultTotalScoreText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/10*3, droidFont, "" + score, 11, this.mEngine.getVertexBufferObjectManager());
 		
 		resultScoreLabelText.setColor(0.3f, 0.5f, 0.5f);
 		resultComboScoreLabelText.setColor(0.3f, 0.5f, 0.5f);
@@ -509,12 +499,19 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		resultScoreText.setColor(0.3f, 0.5f, 0.5f);
 		resultComboScoreText.setColor(0.3f, 0.5f, 0.5f);
 		resultTotalScoreText.setColor(0.3f, 0.5f, 0.5f);
+
+		// rectangle indikator tertangkap
+		rect = new Rectangle(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2, 5.0f, 5.0f, activity.getVertexBufferObjectManager());
+		rect.setVisible(false);
+
+		// crosshair
+		basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
+		fullCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairFullTextureRegion, activity.getVertexBufferObjectManager());
 		
 		gameScene.attachChild(rect);
 		gameScene.attachChild(basicCrosshair);
 		basicCrosshair.setVisible(false);
 		gameScene.attachChild(mText);
-//		gameScene.attachChild(scoreLblText);
 		gameScene.attachChild(scoreText);
 		gameScene.attachChild(comboText);
 		
@@ -526,7 +523,8 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		
 		gameScene.attachChild(resultBoard);
 		resultBoard.setVisible(false);
-		
+
+		gameScene.attachChild(scoreSpawnText);
 		gameScene.attachChild(resultScoreLabelText);
 		gameScene.attachChild(resultComboScoreLabelText);
 		gameScene.attachChild(resultTotalScoreLabelText);
@@ -534,6 +532,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		gameScene.attachChild(resultComboScoreText);
 		gameScene.attachChild(resultTotalScoreText);
 		
+		scoreSpawnText.setVisible(false);
 		resultScoreLabelText.setVisible(false);
 		resultComboScoreLabelText.setVisible(false);
 		resultTotalScoreLabelText.setVisible(false);
@@ -545,12 +544,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	}
 	
 	public void catchInsects() {
+		if(!spawnScore) {
+			scoreText.setText("" + score + " pts");
+		}
 		if(!isCatching) {
 			if (dz >= 10.0f){
 				if(rect.collidesWith(insect)) {
 					prevAmount = amount;
 					amount++;
-					Log.d("amount", "amount now : " + amount + ", prevAmount : " + prevAmount);
 					if(amount <= 5) {		
 						// terkait per-combo-an
 						if(ctype == insect.getType())
@@ -559,12 +560,16 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 							combo = 1;
 						
 						// terkait per-score-an
+						spawnScore = true;
+						scoreSpawnTime = 100;
+						scoreSpawnText.setPosition(insect.getX(), insect.getY());
 						score += insect.getScore() * combo;
 						collectInsect(insect.getType());
 						comboText.setText("X" + combo);
-						scoreText.setText("" + score + " pts");
 						ctype=insect.getType();
-						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
+						scoreSpawnText.setText("+" + insect.getScore() + " X " + combo);
+						
+//						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
 						
 						// remove si serangga, buat yg baru lagi
 						gameScene.detachChild(insect);
@@ -636,6 +641,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 //				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 		}
+		
 	}
 	
 	public void updateSpritePosition() {
@@ -667,8 +673,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		
 		// pergerakan khusus masing-masing serangga
 		insect.move();
+		if(!spawnScore) {
+			scoreSpawnText.setPosition(insect.getX(), insect.getY());
+		}
 		
-//			Log.d("Accelero", "faceX = " + face.getX() + ", faceY = " + face.getY());
 	}
 	
 	public void removeOutlyingInsects() {
@@ -714,24 +722,31 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private void updateCrosshairColor() {
 		if(amount < 5) {
 			if(prevAmount == 5) {
-//				Log.d("crosshair", "case A");
-//				gameScene.detachChild(fullCrosshair);
-//				gameScene.attachChild(basicCrosshair);
 				fullCrosshair.setVisible(false);
 				basicCrosshair.setVisible(true);
 			} else {
-//				Log.d("crosshair", "case B");
-//				gameScene.detachChild(basicCrosshair);
-//				gameScene.attachChild(basicCrosshair);
 				basicCrosshair.setVisible(false);
 				basicCrosshair.setVisible(true);
 			}
 		} else {
-//			Log.d("crosshair", "case C");
-//			gameScene.detachChild(basicCrosshair);
-//			gameScene.attachChild(fullCrosshair);
 			basicCrosshair.setVisible(false);
 			fullCrosshair.setVisible(true);
+		}
+	}
+	
+	public void showScoreEffect() {
+		// efek tambahan
+		if(spawnScore && scoreSpawnTime >= 0) {
+			Log.d("score effect", "spawn time : " + scoreSpawnTime);
+			scoreSpawnText.setVisible(true);
+			scoreSpawnText.setPosition(
+					scoreSpawnText.getX() - (scoreSpawnText.getX() / 100), 
+					scoreSpawnText.getY() + (activity.getCameraHeight() - scoreSpawnText.getY()) / 100);
+			scoreSpawnTime--;
+		} else {
+			scoreSpawnText.setVisible(false);
+//			scoreSpawnTime = 100;
+			spawnScore = false;
 		}
 	}
 	
