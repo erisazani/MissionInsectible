@@ -63,6 +63,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private final int FONT_COMBO_SIZE = 40;
 	private final int RESULT_FONT_SIZE = 14;
 	
+	private final int COMBO_MAGNIFY = 0;
+	private final int COMBO_SHRINK = 1;
+	private final int COMBO_NORMAL = 2;
+	private int comboScaling = COMBO_NORMAL;
+	
 	private final float INSECT_WIDTH = 32.0f;
 	
 	MainGameActivity activity;
@@ -158,11 +163,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private int gameSec = 60;
 	private int totalSec = gameSec;
 	private int scoreSpawnTime = 100;
+	private int comboAnimateTime = 50;
+	private float comboTextScale = 1.0f;
 	
 	private boolean gameStart = false;
 	private boolean isPausing = false;
 	private boolean gameOver = false;
 	private boolean spawnScore = false;
+	private boolean animateCombo = false;
 	private boolean isCatching;
 	
 	private Music music;
@@ -473,6 +481,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            	catchInsects();
 	            	updateCrosshairColor();
 	            	showScoreEffect();
+	            	showComboEffect();
 	            }
             }
 
@@ -563,11 +572,20 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						spawnScore = true;
 						scoreSpawnTime = 100;
 						scoreSpawnText.setPosition(insect.getX(), insect.getY());
+						
+						if(combo != 1) {
+							animateCombo = true;
+							comboScaling = COMBO_MAGNIFY;
+							comboAnimateTime = 50;
+						}
+						
 						score += insect.getScore() * combo;
 						collectInsect(insect.getType());
 						comboText.setText("X" + combo);
 						ctype=insect.getType();
 						scoreSpawnText.setText("+" + insect.getScore() + " X " + combo);
+						
+						
 						
 //						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
 						
@@ -734,10 +752,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		}
 	}
 	
+	// OK, no bug detected yet
 	public void showScoreEffect() {
 		// efek tambahan
 		if(spawnScore && scoreSpawnTime >= 0) {
-			Log.d("score effect", "spawn time : " + scoreSpawnTime);
+//			Log.d("score effect", "spawn time : " + scoreSpawnTime);
 			scoreSpawnText.setVisible(true);
 			scoreSpawnText.setPosition(
 					scoreSpawnText.getX() - (scoreSpawnText.getX() / 100), 
@@ -745,12 +764,41 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 			scoreSpawnTime--;
 		} else {
 			scoreSpawnText.setVisible(false);
-//			scoreSpawnTime = 100;
 			spawnScore = false;
 		}
 	}
 	
+	public void showComboEffect() {
+		// efek tambahan
+		if(animateCombo) {
+			// set scaling center to lower left corner of the text
+			comboText.setScaleCenter(0, 0);
+			
+			// when to shrink, when to stop
+			if(comboScaling == COMBO_MAGNIFY && comboTextScale > 2.0f) {
+				comboScaling = COMBO_SHRINK;
+			} else if(comboScaling == COMBO_SHRINK && comboTextScale < 1.0f) {
+				comboScaling = COMBO_NORMAL;
+			}
+			
+			// magnify and shrink
+			if(comboScaling == COMBO_SHRINK) {
+				comboTextScale -= 0.04f; 
+			} else if(comboScaling == COMBO_MAGNIFY) {
+				comboTextScale += 0.04f;
+			}
+			
+			// set the scale based on scaling condition
+			comboText.setScale(comboTextScale);
+			comboAnimateTime--;
+		} 
+		if(comboAnimateTime < 0) {
+			animateCombo = false;
+		}
+	}
+	
 	public void createGallery(){
+
 		insectDb.checkGallery();
 	}
 	
@@ -792,8 +840,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		dvx = vX - vPrevX;
 		dvy = vY - vPrevY;
 		dvz = vZ - vPrevZ;
-		
-//		Log.d("Acceleration", "vX = " + vX + ", vY = " + vY + ", vZ = " + vZ);
 	}
 	
 	@Override
