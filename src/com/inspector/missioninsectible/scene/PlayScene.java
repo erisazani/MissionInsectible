@@ -43,14 +43,20 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.NetworkInfo.DetailedState;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.inspector.missioninsectible.MainGameActivity;
 import com.inspector.missioninsectible.misc.Insect;
@@ -174,6 +180,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private boolean isCatching;
 	
 	private Music music;
+	private AlertDialog.Builder alert;
+	private EditText input;
+	private String userName;
+	private Handler mHandler;
 	
 	// dummy variables, delete later
 //	Text xt, yt, zt;
@@ -208,26 +218,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	@Override
 	protected void onCreateResources() throws IOException {
 		Log.d("debug", "masuk PlayScene.onCreateResources");
-//		try {
-//			beetleTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_beetle.png");
-//			ladybugTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_ladybug.png");
-//			grasshopperTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_grasshopper.png");
-//			butterflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_butterfly.png");
-//			beeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_bee.png");
-//			goldenDragonflyTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_golden_dragonfly.png");
-//			timeTexture = new AssetBitmapTexture(getTextureManager(), getAssets(), "image/sprite/sprite_time.png");
-//			Log.d("Texture", "Texture Loaded");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			Log.d("Texture", "Texture Not Loaded");
-//		}
-//		beetleTextureRegion = TextureRegionFactory.extractFromTexture(beetleTexture);
-//		ladybugTextureRegion = TextureRegionFactory.extractFromTexture(ladybugTexture);
-//		grasshopperTextureRegion = TextureRegionFactory.extractFromTexture(grasshopperTexture);
-//		butterflyTextureRegion = TextureRegionFactory.extractFromTexture(butterflyTexture);
-//		beeTextureRegion = TextureRegionFactory.extractFromTexture(beeTexture);
-//		goldenDragonflyTextureRegion = TextureRegionFactory.extractFromTexture(goldenDragonflyTexture);
-//		timeTextureRegion = TextureRegionFactory.extractFromTexture(timeTexture);
 		
 		// for animated insect
 		this.beetleTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
@@ -281,19 +271,12 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.pauseButtonTexture.load();
 		this.pauseGameTexture.load();
 		
-		//for result board
+		// result board
 		this.resultBoardTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.resultBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(resultBoardTexture, this, "gfx/Result_Board.png",0,0);		
 		this.resultBoardTexture.load();
 		
-//		beetleTexture.load();
-//		ladybugTexture.load();
-//		grasshopperTexture.load();
-//		butterflyTexture.load();
-//		beeTexture.load();
-//		goldenDragonflyTexture.load();
-//		timeTexture.load();
-		
+		// font texture, font, and load the font
 		this.mFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mComboFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.droidFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -323,16 +306,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.mEngine.getFontManager().loadFont(mComboFont);
 		this.mEngine.getFontManager().loadFont(droidFont);
 		
-//		try
-//		{
-//		    music = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"sound/effect/catch_insect.ogg");
-//		    music.setVolume(1.0f);
-//		    this.mEngine.getMusicManager().add(music);
-//		}
-//		catch (IOException e)
-//		{
-//		    e.printStackTrace();
-//		}
+		mHandler = new Handler(Looper.getMainLooper());		
 	}
 
 	@Override
@@ -407,6 +381,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	        	if(countSec == 3) {
 					mText.setColor(Color.GREEN);
 	        	}
+	        	if(countSec == 0) {
+	        		mText.setText("Start!");
+	        	}
 				if(countSec < 0) {
 					gameScene.detachChild(mText);
 					mText.setPosition(activity.mCamera.getWidth()/2, activity.mCamera.getHeight() - FONT_SIZE / 2 - 10);
@@ -436,12 +413,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		            	printScore(score);
 		            	mText.setText("0");
 		            	
-		            	// insert score to database
-		            	insectDb.addHiScore("Febriana", score);
-		            	insectDb.updateGallery(totalSec,beetle,ladybug,grasshopper,butterfly,honeyBee,goldenDragonfly,timeInsect);
-		            	insectDb.printHiScore();
-		            	insectDb.checkGallery();
-		            	
+		            	// insert high score to database
+		            	mHandler.post(new Runnable() {
+							@Override
+							public void run() {
+				            	saveHighScore();
+							}
+		            	});
+
 		            	// done if it is a game over
 		            	gameOver = true;
 		            	resultBoard.setVisible(true);
@@ -491,7 +470,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		// text yang muncul di layar
 		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score + " pts", 15, this.mEngine.getVertexBufferObjectManager());
 		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
-		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 3, this.mEngine.getVertexBufferObjectManager());
+		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 10, this.mEngine.getVertexBufferObjectManager());
 		scoreSpawnText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, droidFont, "+" + insect.getScore(), 10, this.mEngine.getVertexBufferObjectManager());
 		
 		resultScoreLabelText = new Text(activity.mCamera.getWidth()/10*3, activity.mCamera.getHeight()/3*2, droidFont, "Base Score", 10, this.mEngine.getVertexBufferObjectManager());
@@ -517,9 +496,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
 		fullCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, crosshairFullTextureRegion, activity.getVertexBufferObjectManager());
 		
-		gameScene.attachChild(rect);
-		gameScene.attachChild(basicCrosshair);
-		basicCrosshair.setVisible(false);
 		gameScene.attachChild(mText);
 		gameScene.attachChild(scoreText);
 		gameScene.attachChild(comboText);
@@ -548,6 +524,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		resultScoreText.setVisible(false);
 		resultComboScoreText.setVisible(false);
 		resultTotalScoreText.setVisible(false);
+		
+		gameScene.attachChild(rect);
+		gameScene.attachChild(basicCrosshair);
+		basicCrosshair.setVisible(false);
 		
 		return gameScene;
 	}
@@ -594,6 +574,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						insect = createInsect();
 						gameScene.attachChild(insect);
 						
+						if(amount < 5) {
+							gameScene.detachChild(basicCrosshair);
+							gameScene.attachChild(basicCrosshair);
+						} else {
+							gameScene.detachChild(fullCrosshair);
+							gameScene.attachChild(fullCrosshair);
+						}
+						
 						//mainin sound effect
 //						music.play();
 					} else {
@@ -621,27 +609,24 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	}
 	
 	protected Insect createInsect(){
+		// randomize the appearance of the insect 
 		Random randomGenerator = new Random();
-		
 		int type = randomGenerator.nextInt(7) + 1;
 		float initX = randomGenerator.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
 		float initY = (randomGenerator.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
-		
-		// CEK DI BAGIAN SINI
 		ctype = (ctype == 0? type : ctype);
 		
+		// create the insect based on type
 		switch (type) {
 			case 1: 
 				Log.d("insect", "buat beetle di posisi " + initX + "," + initY); 
 				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 2: 
 				Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 3: 
 				Log.d("insect", "buat grasshopper di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, grasshopperTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			case 4: 
 				Log.d("insect", "buat butterfly di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, butterflyTiledTextureRegion, this.getVertexBufferObjectManager(), type);
@@ -654,10 +639,8 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 			case 7: 
 				Log.d("insect", "buat time insect di posisi " + initX + "," + initY);
 				return new Insect(initX, initY, timeTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 			default: 
 				return new Insect(initX, initY, beetleTiledTextureRegion, this.getVertexBufferObjectManager(), type);
-//				return new Insect(initX, initY, ladybugTiledTextureRegion, this.getVertexBufferObjectManager(), type);
 		}
 		
 	}
@@ -795,6 +778,37 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		if(comboAnimateTime < 0) {
 			animateCombo = false;
 		}
+	}
+	
+	private void saveHighScore(){
+		
+		input = new EditText(this);
+		alert = new AlertDialog.Builder(this);
+//        this.runOnUiThread(new Runnable() {                       
+//            @Override
+//            public void run() {
+                    alert.setTitle("High Score");
+                    alert.setMessage("Enter your name here");
+                    alert.setView(input);
+                    alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int whichButton) {
+	                    	userName = input.getText().toString();
+	                    	insectDb.addHiScore(userName, score);
+			            	insectDb.updateGallery(totalSec,beetle,ladybug,grasshopper,butterfly,honeyBee,goldenDragonfly,timeInsect);
+			            	insectDb.printHiScore();
+			            	insectDb.checkGallery();
+	                    }
+                    });
+   
+                    alert.setNegativeButton("No, thanks", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+						
+						}
+                    });
+   
+                    alert.show();
+//            }                  
+//        });
 	}
 	
 	public void createGallery(){
