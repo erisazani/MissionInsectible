@@ -7,7 +7,6 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 
 import android.content.Intent;
-import android.util.Log;
 
 import com.inspector.missioninsectible.MainGameActivity;
 
@@ -19,10 +18,8 @@ public class LoadingScene extends Scene {
 		activity = MainGameActivity.getSharedInstance();
 		
 		setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
-		final float centerX = (activity.mCamera.getWidth() - activity.mLoadScreenBGRegion.getWidth()) / 2;
-		final float centerY = (activity.mCamera.getHeight() - activity.mLoadScreenBGRegion.getHeight()) / 2;
-		Sprite background = new Sprite(centerX,centerY, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
-		//background.setSize(activity.getCameraWidth(), activity.getCameraHeight());
+		Sprite background = new Sprite(activity.getCameraWidth()/2,activity.getCameraHeight()/2, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
+		background.setSize(activity.mLoadScreenBGRegion.getWidth()/2, activity.mLoadScreenBGRegion.getHeight()/2);
 		attachChild(background);
 	
 		startGame();
@@ -36,9 +33,8 @@ public class LoadingScene extends Scene {
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				activity.startActivity(new Intent(activity, PlayScene.class));
-				Log.d("debug", "harusnya sudah masuk activity PlayScene");
-			    }
-			};
+				activity.setCurrentScene(new MainMenuScene());
+			}};
 			
 			registerEntityModifier(dMod);
 		}
