@@ -20,6 +20,7 @@ import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.augmentedreality.BaseAugmentedRealityGameActivity;
 import org.andengine.input.sensor.acceleration.AccelerationData;
@@ -40,6 +41,7 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
+import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
@@ -79,24 +81,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	MainGameActivity activity;
 	private Scene gameScene;
 	
-	private ITexture beetleTexture;
-	private ITexture ladybugTexture;
-	private ITexture grasshopperTexture;
-	private ITexture butterflyTexture;
-	private ITexture beeTexture;
-	private ITexture goldenDragonflyTexture;
-	private ITexture timeTexture;
-	
+	// textures
 	private ITexture mFontTexture;
 	private ITexture mComboFontTexture;
 	private ITexture droidFontTexture;
-	private ITextureRegion beetleTextureRegion;
-	private ITextureRegion ladybugTextureRegion;
-	private ITextureRegion grasshopperTextureRegion;
-	private ITextureRegion butterflyTextureRegion;
-	private ITextureRegion beeTextureRegion;
-	private ITextureRegion goldenDragonflyTextureRegion;
-	private ITextureRegion timeTextureRegion;
 	
 	// animated sprite
 	private BuildableBitmapTextureAtlas beetleTiledTexture;
@@ -137,6 +125,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	// jumlah tertangkap
 	private int beetle,ladybug,grasshopper,butterfly,honeyBee,goldenDragonfly,timeInsect;
 	
+	// sensor parameter
 	private float accX, accY, accZ, accPrevX, accPrevY, accPrevZ, dx, dy, dz;
 	private float vX, vY, vZ, vPrevX, vPrevY, vPrevZ, dvx, dvy, dvz;
 	
@@ -205,6 +194,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		
 		EngineOptions engineOptions = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(activity.mCamera.getWidth(), activity.mCamera.getHeight()), activity.mCamera);
+		
 		final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 		configChooserOptions.setRequestedRedSize(8);
 		configChooserOptions.setRequestedGreenSize(8);
@@ -212,7 +202,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		configChooserOptions.setRequestedAlphaSize(8);
 		configChooserOptions.setRequestedDepthSize(16);
 		
-		return activity.engineOptions;
+		return engineOptions;
 	}
 
 	@Override
@@ -379,9 +369,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	        	countSec--;
 	        	mText.setText("" + countSec);
 	        	if(countSec == 3) {
-					mText.setColor(Color.GREEN);
+					mText.setColor(0.957f, 0.719f, 0.0f);
 	        	}
 	        	if(countSec == 0) {
+	        		mText.setColor(Color.RED);
 	        		mText.setText("Start!");
 	        	}
 				if(countSec < 0) {
@@ -468,7 +459,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		});
 		
 		// text yang muncul di layar
-		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score + " pts", 15, this.mEngine.getVertexBufferObjectManager());
+		scoreText = new Text(50, activity.mCamera.getHeight() - (int)(FONT_SIZE * 2.5 / 2), mFont, "" + score + " pts", 15, new TextOptions(HorizontalAlign.LEFT), this.mEngine.getVertexBufferObjectManager());
 		comboText = new Text(25, FONT_COMBO_SIZE / 2, mComboFont, "X" + combo , 7, this.mEngine.getVertexBufferObjectManager());
 		mText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, mFont, "" + countSec, 10, this.mEngine.getVertexBufferObjectManager());
 		scoreSpawnText = new Text(activity.mCamera.getWidth()/2, activity.mCamera.getHeight()/2 - FONT_SIZE / 2, droidFont, "+" + insect.getScore(), 10, this.mEngine.getVertexBufferObjectManager());
