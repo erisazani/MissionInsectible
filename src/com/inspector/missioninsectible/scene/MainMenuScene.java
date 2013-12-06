@@ -1,6 +1,5 @@
 package com.inspector.missioninsectible.scene;
 
-import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
 import org.andengine.entity.scene.menu.item.IMenuItem;
@@ -25,36 +24,43 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 		activity = MainGameActivity.getSharedInstance();
 		
 		setBackgroundEnabled(false);
-		Sprite backgroundMenu = new Sprite(0,0, activity.mBackgroundTextureRegion, activity.getVertexBufferObjectManager());
+		Sprite backgroundMenu = new Sprite(activity.getCameraWidth()/2,activity.getCameraHeight()/2, activity.mMenuBackgroundTextureRegion, activity.getVertexBufferObjectManager());
 		backgroundMenu.setSize(activity.getCameraWidth(), activity.getCameraHeight());
 		attachChild(backgroundMenu);
 		
 		final SpriteMenuItem playMenuItem = new SpriteMenuItem(MENU_PLAY, activity.mMenuPlayTextureRegion, activity.getVertexBufferObjectManager());
-		playMenuItem.setPosition(0, mCamera.getHeight()/2 + 30);
+		playMenuItem.setPosition(activity.getCameraWidth()/4, (mCamera.getHeight() * 2/3) - 15);
+		playMenuItem.setSize(80, 35);
 		addMenuItem(playMenuItem);
 
 		final SpriteMenuItem battleMenuItem = new SpriteMenuItem(MENU_BATTLE, activity.mMenuBattleTextureRegion, activity.getVertexBufferObjectManager());
-		battleMenuItem.setPosition(0, mCamera.getHeight()/2 + 80);
+		battleMenuItem.setPosition(activity.getCameraWidth()/4, (mCamera.getHeight() * 2/3) - 55);
+		battleMenuItem.setSize(80, 35);
 		addMenuItem(battleMenuItem);
 		
 		final SpriteMenuItem galleryMenuItem = new SpriteMenuItem(MENU_GALLERY, activity.mMenuGalleryTextureRegion, activity.getVertexBufferObjectManager());
-		galleryMenuItem.setPosition(0, mCamera.getHeight()/2 + 130);
+		galleryMenuItem.setPosition(activity.getCameraWidth()/4, (mCamera.getHeight() * 2/3) - 95);
+		galleryMenuItem.setSize(80, 35);
 		addMenuItem(galleryMenuItem);
 
 		final SpriteMenuItem hiScoreMenuItem = new SpriteMenuItem(MENU_HISCORE, activity.mMenuScoreTextureRegion, activity.getVertexBufferObjectManager());
-		hiScoreMenuItem.setPosition(0, mCamera.getHeight()/2 + 180);
+		hiScoreMenuItem.setPosition(activity.getCameraWidth()*3/4, (mCamera.getHeight() *2/3) - 95);
+		hiScoreMenuItem.setSize(80, 35);
 		addMenuItem(hiScoreMenuItem);
 
 		final SpriteMenuItem howToMenuItem = new SpriteMenuItem(MENU_HOWTO, activity.mMenuHowToTextureRegion, activity.getVertexBufferObjectManager());
-		howToMenuItem.setPosition(mCamera.getWidth()-114, mCamera.getHeight()/2 + 80);
+		howToMenuItem.setPosition(activity.getCameraWidth()*3/4, mCamera.getHeight() * 2/3 - 15);
+		howToMenuItem.setSize(80, 35);
 		addMenuItem(howToMenuItem);
 		
 		final SpriteMenuItem aboutMenuItem = new SpriteMenuItem(MENU_ABOUT, activity.mMenuAboutTextureRegion, activity.getVertexBufferObjectManager());
-		aboutMenuItem.setPosition(mCamera.getWidth()-114, mCamera.getHeight()/2 + 130);
+		aboutMenuItem.setPosition(activity.getCameraWidth()*3/4, mCamera.getHeight() * 2/3 - 55);
+		aboutMenuItem.setSize(80, 35);
 		addMenuItem(aboutMenuItem);
 
 		final SpriteMenuItem quitMenuItem = new SpriteMenuItem(MENU_QUIT, activity.mMenuQuitTextureRegion, activity.getVertexBufferObjectManager());
-		quitMenuItem.setPosition(mCamera.getWidth()-114, mCamera.getHeight()/2 + 180);
+		quitMenuItem.setPosition(activity.getCameraWidth()/2, mCamera.getHeight() * 2/3 - 135);
+		quitMenuItem.setSize(80, 35);
 		addMenuItem(quitMenuItem);
 
 
