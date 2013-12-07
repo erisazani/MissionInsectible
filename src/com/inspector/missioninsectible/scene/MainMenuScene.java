@@ -40,6 +40,7 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 	private Sprite clickedAbout;
 	private SpriteMenuItem quitMenuItem;
 	private Sprite clickedQuit;
+	private boolean musicOn = true;
 	
 	
 	public MainMenuScene(){
@@ -111,6 +112,8 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 		addMenuItem(quitMenuItem);
 		attachChild(clickedQuit);
 		
+		activity.BGM.play();
+		
 		suaraOn= new Sprite(activity.getCameraWidth() - activity.SoundOnTextureRegion.getWidth()/2, activity.getCameraHeight() - activity.SoundOnTextureRegion.getHeight()/2, activity.SoundOnTextureRegion, activity.getVertexBufferObjectManager()){
 
 			@Override
@@ -118,6 +121,14 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				// TODO Auto-generated method stub
 				if(pSceneTouchEvent.isActionDown()){
+					
+					if (musicOn == true) {
+						activity.BGM.pause();
+						musicOn = false;
+					} else {
+						activity.BGM.play();
+						musicOn = true;
+					}
 					 soundOn = !soundOn;
 			         suaraOn.setVisible(soundOn);
 			         suaraOff.setVisible(!soundOn);	

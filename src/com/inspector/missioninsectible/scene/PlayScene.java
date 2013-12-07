@@ -71,6 +71,9 @@ public class PlayScene extends Scene{
 		grasshopper.animate(100);
 		attachChild(grasshopper);
 
+		activity.gameBGM.play();
+	
+
 		// for kekeran, tinggal ganti posisinya aja ya
 //		final Sprite basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, activity.crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
 //		attachChild(basicCrosshair);

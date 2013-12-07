@@ -2,6 +2,8 @@ package com.inspector.missioninsectible;
 
 import java.io.IOException;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
@@ -137,6 +139,8 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	public TextureRegion mMenuAboutClickedTextureRegion;
 	public TextureRegion mMenuQuitClickedTextureRegion;
 	public Sound mMenuClickedSound;
+	public Music BGM;
+	public Music gameBGM;
 	
 
 
@@ -150,6 +154,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		final EngineOptions engineOptions = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), mCamera);
 		engineOptions.getAudioOptions().setNeedsSound(true);
+		engineOptions.getAudioOptions().setNeedsMusic(true);
 //	//	final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 //		configChooserOptions.setRequestedRedSize(8);
 //		configChooserOptions.setRequestedGreenSize(8);
@@ -300,7 +305,17 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	
 			SoundFactory.setAssetBasePath("mfx/");
 			try {
-				this.mMenuClickedSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "Menu Select 1.wav");
+				this.mMenuClickedSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "Menu Select 2.wav");
+			} catch (final IOException e) {
+				Debug.e(e);
+			}
+			
+			MusicFactory.setAssetBasePath("mfx/");
+			try{
+			this.BGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "bgm.ogg");
+			this.BGM.setLooping(true);
+			this.gameBGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "game_bgm.ogg");
+			this.gameBGM.setLooping(true);
 			} catch (final IOException e) {
 				Debug.e(e);
 			}

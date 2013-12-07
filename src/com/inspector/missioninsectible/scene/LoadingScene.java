@@ -15,6 +15,7 @@ public class LoadingScene extends Scene {
 		
 		activity = MainGameActivity.getSharedInstance();
 		
+		activity.BGM.stop();
 		setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
 		Sprite background = new Sprite(activity.getCameraWidth()/2,activity.getCameraHeight()/2, activity.mLoadScreenBGRegion, activity.getVertexBufferObjectManager());
 		background.setSize(activity.mLoadScreenBGRegion.getWidth()/2, activity.mLoadScreenBGRegion.getHeight()/2);
