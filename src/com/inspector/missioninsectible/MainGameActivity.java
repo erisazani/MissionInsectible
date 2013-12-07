@@ -8,6 +8,7 @@ import org.andengine.engine.camera.Camera;
 //import org.andengine.engine.options.ConfigChooserOptions;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
@@ -102,8 +103,8 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	private BitmapTextureAtlas mHomeButtonTexture;
 	
 	private BitmapTextureAtlas mSoundButtonTexture;
-	private TextureRegion SoundOnTextureRegion;
-	private TextureRegion SoundOffTextureRegion;
+	public TextureRegion SoundOnTextureRegion;
+	public TextureRegion SoundOffTextureRegion;
 	
 	private BuildableBitmapTextureAtlas beeTexture;
 	public TiledTextureRegion beeTiledTextureRegion;
@@ -113,16 +114,30 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	public TiledTextureRegion butterflyTiledTextureRegion;
 	private BuildableBitmapTextureAtlas ladybugTexture;
 	public TiledTextureRegion ladybugTiledTextureRegion;
+	private BuildableBitmapTextureAtlas grasshopperTexture;
+	public TiledTextureRegion grasshopperTiledTextureRegion;
 	
 	private Sound mBackgroundSound;
 	
 	private BitmapTextureAtlas crosshairTexture;
 	public TextureRegion crosshairBasicTextureRegion;
 	public TextureRegion crosshairFullTextureRegion;
+
 	private BitmapTextureAtlas pauseGameTexture;
 	public TextureRegion pauseGameTextureRegion;
 	public TextureRegion mPauseTextureRegion;
 	public TextureRegion mReplayTextureRegion;
+	
+	private BitmapTextureAtlas mMenuClickedTexture;
+	public TextureRegion mMenuBattleClickedTextureRegion;
+	public TextureRegion mMenuPlayClickedTextureRegion;
+	public TextureRegion mMenuGalleryClickedTextureRegion;
+	public TextureRegion mMenuScoreClickedTextureRegion;
+	public TextureRegion mMenuHowToClickedTextureRegion;
+	public TextureRegion mMenuAboutClickedTextureRegion;
+	public TextureRegion mMenuQuitClickedTextureRegion;
+	public Sound mMenuClickedSound;
+	
 
 
 	@Override
@@ -130,8 +145,11 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 		// TODO Auto-generated method stub
 		instance = this;
 		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+//		final EngineOptions engineOptions = new EngineOptions(true,
+//				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
 		final EngineOptions engineOptions = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+				ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), mCamera);
+		engineOptions.getAudioOptions().setNeedsSound(true);
 //	//	final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 //		configChooserOptions.setRequestedRedSize(8);
 //		configChooserOptions.setRequestedGreenSize(8);
@@ -173,6 +191,18 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			this.mMenuQuitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuTexture, this, "Menus-quit.png", 105, 90);	
 			this.mMenuTexture.load();
 			
+			// for clicked menu button
+			this.mMenuClickedTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			this.mMenuPlayClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-play-active.png",0,0);
+			this.mMenuBattleClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-battle-active.png", 0, 45);
+			this.mMenuGalleryClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-gallery-active.png", 0, 90);
+			this.mMenuScoreClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-hiscore-active.png", 0, 135);
+			this.mMenuHowToClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-howto-active.png", 105, 0);
+			this.mMenuAboutClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-about-active.png", 105, 45);
+			this.mMenuQuitClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-quit-active.png", 105, 90);	
+			this.mMenuClickedTexture.load();
+			
+			// sound button
 			this.SoundOnTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_on.png", 0, 0);
 			this.SoundOffTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_off.png", 55, 0);
 			this.mSoundButtonTexture.load();
@@ -237,6 +267,8 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 			this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTexture, this, "butterfly-tiled.png", 2,1);
 			this.ladybugTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 			this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTexture, this, "ladybug-tiled.png", 2,1);
+			this.grasshopperTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
+			this.grasshopperTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(grasshopperTexture, this, "grasshopper-tiled.png", 2		,1);
 			
 			//for crosshair
 			this.crosshairTexture = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -258,23 +290,20 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 				this.butterflyTexture.load();
 				this.ladybugTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
 				this.ladybugTexture.load();
+				this.grasshopperTexture.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+				this.grasshopperTexture.load();
 			} 
 			catch (TextureAtlasBuilderException e) {
 					Debug.e(e);
 			}
-						
-			// 		SoundFactory.setAssetBasePath("mfx/");
-// 		try {
-// 			this.mBackgroundSound = SoundFactory.createSoundFromAsset(this.getSoundManager(), this, "explosion.ogg");
-// 		} catch (final IOException e) {
-//		Debug.e(e);
-// 		}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			Log.d("Texture", "Texture Not Loaded");
-//		}
-//		mFaceTextureRegion = TextureRegionFactory.extractFromTexture(mFaceTexture);
-//		mFaceTexture.load();
+			
+	
+			SoundFactory.setAssetBasePath("mfx/");
+			try {
+				this.mMenuClickedSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "Menu Select 1.wav");
+			} catch (final IOException e) {
+				Debug.e(e);
+			}
 	}
 
 

@@ -65,7 +65,12 @@ public class PlayScene extends Scene{
 //		ladybug.setSize(40, 40);
 //		ladybug.animate(120);
 //		attachChild(ladybug);
-		
+
+		final AnimatedSprite grasshopper = new AnimatedSprite(activity.getCameraWidth()*3/4, activity.getCameraHeight()/4, activity.grasshopperTiledTextureRegion, activity.getVertexBufferObjectManager());
+		grasshopper.setSize(40, 40);
+		grasshopper.animate(100);
+		attachChild(grasshopper);
+
 		// for kekeran, tinggal ganti posisinya aja ya
 //		final Sprite basicCrosshair = new Sprite(activity.getCameraWidth()/2, activity.getCameraHeight()/2, activity.crosshairBasicTextureRegion, activity.getVertexBufferObjectManager());
 //		attachChild(basicCrosshair);
