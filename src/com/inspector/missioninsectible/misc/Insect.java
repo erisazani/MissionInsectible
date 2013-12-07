@@ -74,6 +74,10 @@ public class Insect extends AnimatedSprite {
 	private int spawnTime;
 	private float speed;
 	
+	private float spriteXScale = 1.0f;
+	private int moveDirection;
+	private float moveTime;
+	
 	public Insect(float initX, float initY, TiledTextureRegion textureRegion, VertexBufferObjectManager vbmo, int type) {
 		super(initX, initY, textureRegion, vbmo);
 		this.type = type;
@@ -81,6 +85,9 @@ public class Insect extends AnimatedSprite {
 		this.score = Insect.INSECT_SCORE[type];
 		this.spawnTime = Insect.SPAWN_TIME[type];
 		this.speed = Insect.INSECT_SPEED[type];
+		
+		moveDirection = 0;
+		moveTime = 100;
 		animate(100);
 	}
 	
@@ -106,55 +113,74 @@ public class Insect extends AnimatedSprite {
 	
 	public void move() {
 		Random r = new Random();
-		if(r.nextInt(2) == 0)
-			this.setPosition(this.getX() - getSpeed(), this.getY());
-		else
-			this.setPosition(this.getX() + getSpeed(), this.getY());
+//		if(r.nextInt(2) == 0) {
+//			this.setPosition(this.getX() - getSpeed(), this.getY());
+////			spriteXScale = -1.0f;
+////			setScaleX(spriteXScale);
+//		}
+//		else {
+//			this.setPosition(this.getX() + getSpeed(), this.getY());
+////			spriteXScale = 1.0f;
+////			setScaleX(spriteXScale);
+//		}
 		
 		// akan digunakan segera
-//		switch (type) {
-//			case BEETLE : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case LADYBUG : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case GRASSHOPPER : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case BUTTERFLY : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case BEE : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case GOLDEN_DRAGONFLY : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - getSpeed(), this.getY());
-//				else
-//					this.setPosition(this.getX() + getSpeed(), this.getY());
-//			} break;
-//			case TIME_INSECT : {
-//				if(r.nextInt(2) == 0)
-//					this.setPosition(this.getX() - 1.25f, this.getY());
-//				else
-//					this.setPosition(this.getX() + 1.25f, this.getY());
-//			} break;
-//		}
+		if(moveTime >= 0) {
+			moveTime--;
+			switch (type) {
+				case BEETLE : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case LADYBUG : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case GRASSHOPPER : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case BUTTERFLY : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case BEE : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case GOLDEN_DRAGONFLY : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1)
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+				case TIME_INSECT : {
+					if(moveDirection == 0)
+						this.setPosition(this.getX() - getSpeed(), this.getY());
+					else if(moveDirection == 1) 
+						this.setPosition(this.getX() + getSpeed(), this.getY());
+				} break;
+			}
+		} else {
+			moveTime = r.nextInt(100) + 100;
+			moveDirection = r.nextInt(3);
+			if(moveDirection == 0) {
+				spriteXScale = -1.0f;
+				setScaleX(spriteXScale);
+			} else if(moveDirection == 1) {
+				spriteXScale = 1.0f;
+			}
+			setScaleX(spriteXScale);
+		}
 	}
 }

@@ -212,14 +212,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 //		for Loading Scene
 		this.mLoadScreenBGTexture = new BitmapTextureAtlas(this.getTextureManager() ,300,150, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
-        this.mLoadScreenBGTexture.load();
-        
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			Log.d("Texture", "Texture Not Loaded");
-//		}
-//		mFaceTextureRegion = TextureRegionFactory.extractFromTexture(mFaceTexture);
-//		mFaceTexture.load();	
+        this.mLoadScreenBGTexture.load();	
 	}
 	
 	@Override

@@ -637,26 +637,26 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	}
 	
 	public void updateSpritePosition() {
-		if(accY < -1.0f) {
-			if(accZ < -1.0f) {
+		if(accY < -2.0f) {
+			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY() - 1.0f);
-			} else if (accZ > -1.0f && accZ < 1.0f) {
+			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY());
 			} else {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY() + 1.0f);
 			}
-		} else if(accY > -1.0f && accY < 1.0f) {
-			if(accZ < -1.0f) {
+		} else if(accY > -2.0f && accY < 2.0f) {
+			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX(), insect.getY() - 1.0f);
-			} else if (accZ > -1.0f && accZ < 1.0f) {
+			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX(), insect.getY());
 			} else {
 				insect.setPosition(insect.getX(), insect.getY() + 1.0f);
 			}
 		} else {
-			if(accZ < -1.0f) {
+			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY() - 1.0f);
-			} else if (accZ > -1.0f && accZ < 1.0f) {
+			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY());
 			} else {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY() + 1.0f);
