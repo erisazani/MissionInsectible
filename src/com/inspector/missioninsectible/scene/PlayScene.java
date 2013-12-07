@@ -78,6 +78,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	private final float INSECT_WIDTH = 32.0f;
 	
+	private final int TWO_INSECTS_SPAWN_BOUNDARY_SEC = 20;
+	private final int THREE_INSECTS_SPAWN_BOUNDARY_SEC = 60;
+	
 	MainGameActivity activity;
 	private Scene gameScene;
 	
@@ -142,8 +145,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private Text resultScoreText, resultComboScoreText, resultTotalScoreText;
 	private Text scoreSpawnText, comboSpawnText;
 	
-//	private ArrayList<Insect> insects;
 	private Insect insect;
+	private Insect insect2;
+	private Insect insect3;
 	private int ctype = 0;
 	private int amount = 0;
 	private int prevAmount = 0;
@@ -157,6 +161,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private int countSec = 10;
 	private int gameSec = 60;
 	private int totalSec = gameSec;
+	private int elapsedSec;
 	private int scoreSpawnTime = 100;
 	private int comboAnimateTime = 50;
 	private float comboTextScale = 1.0f;
@@ -356,7 +361,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		Random r = new Random();
 		float initX = r.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
 		float initY = (r.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
-		insect = new Insect(initX, initY, ladybugTiledTextureRegion, activity.getVertexBufferObjectManager(), 1);
+		insect = new Insect(initX, initY, beetleTiledTextureRegion, activity.getVertexBufferObjectManager(), 0);
 		gameScene.attachChild(insect);
 		insect.setVisible(false);
 		Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
@@ -396,6 +401,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	            if(!isPausing && !gameOver){
 	            	if(gameStart) { 
 		            	gameSec--;
+		            	elapsedSec++;
 		            	mText.setText("" + gameSec);
 		            } 
 		            if(gameSec < 0) {
@@ -437,6 +443,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		            	gameScene.unregisterTouchArea(pauseBoard);		            	
 		            	
 		            	mEngine.unregisterUpdateHandler(pTimerHandler);
+		            	Log.d("time elapsed", "elapsed sec : " + elapsedSec);
 		            }
 	            }
 	        }
@@ -601,8 +608,27 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	
 	protected Insect createInsect(){
 		// randomize the appearance of the insect 
+		Log.d("time elapsed", "elapsedTime : " + elapsedSec);
 		Random randomGenerator = new Random();
-		int type = randomGenerator.nextInt(7) + 1;
+		int type = 1;
+		if(elapsedSec <= Insect.SPAWN_TIME[1]) {
+			type = 1;
+		} else if (elapsedSec <= Insect.SPAWN_TIME[2]) {
+			type = randomGenerator.nextInt(2) + 1;
+		} else if (elapsedSec <= Insect.SPAWN_TIME[3]) {
+			type = randomGenerator.nextInt(3) + 1;
+		} else if (elapsedSec <= Insect.SPAWN_TIME[4]) {
+			type = randomGenerator.nextInt(4) + 1;
+		} else if (elapsedSec <= Insect.SPAWN_TIME[5]) {
+			type = randomGenerator.nextInt(5) + 1;
+		} else if (elapsedSec <= Insect.SPAWN_TIME[6]) {
+			type = randomGenerator.nextInt(6) + 1;
+		}
+		int isTime = randomGenerator.nextInt(7) + 1;
+		if(isTime == 7) {
+			type = 7;
+		}
+		
 		float initX = randomGenerator.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
 		float initY = (randomGenerator.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
 		ctype = (ctype == 0? type : ctype);

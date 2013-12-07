@@ -48,11 +48,11 @@ public class Insect extends AnimatedSprite {
 	public static final int[] SPAWN_TIME = new int[] {
 		0,
 		0,
-		15,
+		10,
+		20,
 		40,
-		75,
-		130,
-		200,
+		55,
+		70,
 		30
 	};
 	
