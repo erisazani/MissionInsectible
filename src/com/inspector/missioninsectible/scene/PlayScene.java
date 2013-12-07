@@ -537,11 +537,12 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 			scoreText.setText("" + score + " pts");
 		}
 		if(!isCatching) {
-			if (dz >= 10.0f){
+			Log.d("catch", "amount = "+amount);
+			if (dz >= 7.5f){
 				if(rect.collidesWith(insect)) {
 					prevAmount = amount;
 					amount++;
-					if(amount <= 5) {		
+					//if(amount <= 5) {		
 						// terkait per-combo-an
 						if(ctype == insect.getType())
 							combo++;
@@ -566,9 +567,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						scoreSpawnText.setText("+" + insect.getScore() + " X " + combo);
 						
 						
-						
-//						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
-						
 						// remove si serangga, buat yg baru lagi
 						gameScene.detachChild(insect);
 						insect = createInsect();
@@ -584,15 +582,17 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						
 						//mainin sound effect
 //						music.play();
-					} else {
-						Log.d("catch", "amount full");
-					}
+//					} else {
+//						Log.d("catch", "amount full");
+//					}
 					isCatching = true;
 				}
-			} else if(accZ >= -15.0f)  {
-				freeInsects();
-				isCatching = true;
 			}
+//				else if(-accZ >= 10.0f)  {
+//				Log.d("catch", "free insect");
+//				freeInsects();
+//				isCatching = true;
+//			}
 		}
 		if(isCatching && accZ < -5.0f) {
 			Log.d("catch", "silakan tangkap");
@@ -600,11 +600,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		}
 	}
 	
-	protected void freeInsects(){
-			prevAmount = amount;
-			amount = 0;
-			Log.d("amount", "free amount");
-	}
+//	protected void freeInsects(){
+//			prevAmount = amount;
+//			amount = 0;
+//			Log.d("amount", "free amount");
+//	}
 	
 	protected Insect createInsect(){
 		// randomize the appearance of the insect 
