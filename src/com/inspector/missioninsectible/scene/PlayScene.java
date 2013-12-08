@@ -13,6 +13,16 @@ import org.andengine.engine.options.ConfigChooserOptions;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.particle.SpriteParticleSystem;
+import org.andengine.entity.particle.emitter.CircleParticleEmitter;
+import org.andengine.entity.particle.emitter.IParticleEmitter;
+import org.andengine.entity.particle.initializer.BlendFunctionParticleInitializer;
+import org.andengine.entity.particle.initializer.ColorParticleInitializer;
+import org.andengine.entity.particle.initializer.ExpireParticleInitializer;
+import org.andengine.entity.particle.initializer.VelocityParticleInitializer;
+import org.andengine.entity.particle.modifier.AlphaParticleModifier;
+import org.andengine.entity.particle.modifier.ColorParticleModifier;
+import org.andengine.entity.particle.modifier.ScaleParticleModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
@@ -55,6 +65,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.NetworkInfo.DetailedState;
+import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -77,9 +88,10 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private int comboScaling = COMBO_NORMAL;
 	
 	private final float INSECT_WIDTH = 32.0f;
-	
-	private final int TWO_INSECTS_SPAWN_BOUNDARY_SEC = 20;
-	private final int THREE_INSECTS_SPAWN_BOUNDARY_SEC = 60;
+		
+	private static final float RATE_MIN = 10;
+	private static final float RATE_MAX= 10;
+	private static final int PARTICLES_MAX = 10;
 	
 	MainGameActivity activity;
 	private Scene gameScene;
@@ -125,6 +137,16 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private TextureRegion resultBoardTextureRegion;
 	private Sprite resultBoard;
 	
+	// particle emitter
+	private BitmapTextureAtlas mParticleTextureAtlas;
+    private TextureRegion mParticleTextureRegion;
+    private IParticleEmitter emitter1;
+    private IParticleEmitter emitter2;
+    private IParticleEmitter emitter3;
+    private SpriteParticleSystem particleSystem1;
+    private SpriteParticleSystem particleSystem2;
+    private SpriteParticleSystem particleSystem3;
+	
 	// jumlah tertangkap
 	private int beetle,ladybug,grasshopper,butterfly,honeyBee,goldenDragonfly,timeInsect;
 	
@@ -165,6 +187,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	private int scoreSpawnTime = 100;
 	private int comboAnimateTime = 50;
 	private float comboTextScale = 1.0f;
+	private int particleLimitTime1 = 1;
+	private int particleLimitTime2 = 1;
+	private int particleLimitTime3 = 1;
 	
 	private boolean gameStart = false;
 	private boolean isPausing = false;
@@ -271,6 +296,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.resultBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(resultBoardTexture, this, "gfx/Result_Board.png",0,0);		
 		this.resultBoardTexture.load();
 		
+		// particle
+		mParticleTextureAtlas = new BitmapTextureAtlas(getTextureManager(), 64, 64, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        mParticleTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParticleTextureAtlas, this, "gfx/particle_point.png", 0, 0);
+        mEngine.getTextureManager().loadTexture(this.mParticleTextureAtlas);
+		
 		// font texture, font, and load the font
 		this.mFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mComboFontTexture = new BitmapTextureAtlas(this.mEngine.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -361,10 +391,26 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		Random r = new Random();
 		float initX = r.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
 		float initY = (r.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
-		insect = new Insect(initX, initY, beetleTiledTextureRegion, activity.getVertexBufferObjectManager(), 0);
+		insect = new Insect(initX, initY, beetleTiledTextureRegion, activity.getVertexBufferObjectManager(), 1);
+		Log.d("insect", "buat beetle di posisi " + initX + "," + initY);
+
+		initX = r.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
+		initY = (r.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
+		insect2 = new Insect(initX, initY, beetleTiledTextureRegion, activity.getVertexBufferObjectManager(), 1);
+		Log.d("insect", "buat beetle di posisi " + initX + "," + initY);
+
+		initX = r.nextFloat() * (activity.mCamera.getWidth() - INSECT_WIDTH);
+		initY = (r.nextFloat() * (activity.mCamera.getHeight()- INSECT_WIDTH)) + INSECT_WIDTH;
+		insect3 = new Insect(initX, initY, beetleTiledTextureRegion, activity.getVertexBufferObjectManager(), 1);
+		Log.d("insect", "buat beetle di posisi " + initX + "," + initY);
+		
 		gameScene.attachChild(insect);
+		gameScene.attachChild(insect2);
+		gameScene.attachChild(insect3);
 		insect.setVisible(false);
-		Log.d("insect", "buat ladybug di posisi " + initX + "," + initY);
+		insect2.setVisible(false);
+		insect3.setVisible(false);
+		
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
@@ -384,8 +430,9 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 					gameScene.detachChild(mText);
 					mText.setPosition(activity.mCamera.getWidth()/2, activity.mCamera.getHeight() - FONT_SIZE / 2 - 10);
 					gameScene.attachChild(mText);
-//					gameScene.attachChild(insect);
 					insect.setVisible(true);
+					insect2.setVisible(true);
+					insect3.setVisible(true);
 					basicCrosshair.setVisible(true);
 					gameStart = true;
 					mText.setText("" + gameSec);
@@ -428,8 +475,8 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		        		resultComboScoreText.setVisible(true);
 		        		resultTotalScoreText.setVisible(true);
 		        		
-		        		resultScoreText.setText("" + baseScore);
-		        		resultComboScoreText.setText("" + comboScore);
+		        		resultScoreText.setText("" + baseScore + " pts");
+		        		resultComboScoreText.setText("" + comboScore + " pts");
 		        		resultTotalScoreText.setText("" + score + " pts");
 		        		
 		        		gameScene.detachChild(fullCrosshair);
@@ -438,7 +485,13 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		        		gameScene.detachChild(scoreText);
 		        		gameScene.detachChild(comboText);
 		            	gameScene.detachChild(insect);
+		            	gameScene.detachChild(insect2);
+		            	gameScene.detachChild(insect3);
 		            	gameScene.detachChild(mText);
+		            	gameScene.detachChild(pauseButton);
+		            	gameScene.attachChild(particleSystem1);
+		            	gameScene.attachChild(particleSystem2);
+		            	gameScene.attachChild(particleSystem3);
 		            	
 		            	gameScene.unregisterTouchArea(pauseBoard);		            	
 		            	
@@ -537,6 +590,32 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		if(!isCatching) {
 			if (dz >= 10.0f){
 				if(rect.collidesWith(insect)) {
+					// create particles
+					emitter1 = new CircleParticleEmitter(insect.getX(), insect.getY(), 15);
+					particleSystem1 = new SpriteParticleSystem( 
+			                emitter1,
+			                RATE_MIN,
+			                RATE_MAX,
+			                PARTICLES_MAX,
+			                mParticleTextureRegion,
+			                getVertexBufferObjectManager()
+			            );
+					particleSystem1.addParticleInitializer(new BlendFunctionParticleInitializer<Sprite>(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE));
+			        particleSystem1.addParticleInitializer(new VelocityParticleInitializer<Sprite>(-30, 30, -30, 30));
+			        particleSystem1.addParticleInitializer(new ColorParticleInitializer<Sprite>(1.0f, 1.0f, 0.0f));
+			        particleSystem1.addParticleInitializer(new ExpireParticleInitializer<Sprite>(3.0f));
+			        particleSystem1.addParticleModifier(new ScaleParticleModifier<Sprite>(0.0f, 1.0f, 1.0f, 2.0f));
+			        particleSystem1.addParticleModifier(new ColorParticleModifier<Sprite>(0.0f, 1.0f, 1f, 0.5f, 0.8f, 0.2f, 0f, 0.5f));
+			        particleSystem1.addParticleModifier(new AlphaParticleModifier<Sprite>(0.0f, 0.5f, 1.0f, 0.0f));
+					
+					gameScene.attachChild(particleSystem1);
+					gameScene.registerUpdateHandler(new TimerHandler(1, new ITimerCallback() {
+						@Override
+						public void onTimePassed(TimerHandler pTimerHandler) {
+							particleSystem1.detachSelf();
+						}
+					}));
+					
 					prevAmount = amount;
 					amount++;
 					if(amount <= 5) {		
@@ -563,10 +642,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 						ctype=insect.getType();
 						scoreSpawnText.setText("+" + insect.getScore() + " X " + combo);
 						
-						
-						
-//						Log.d("catch", "score = "+score +",i = "+(amount)+", combo="+combo+", type = "+insect.getType());
-						
 						// remove si serangga, buat yg baru lagi
 						gameScene.detachChild(insect);
 						insect = createInsect();
@@ -580,9 +655,149 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 							gameScene.attachChild(fullCrosshair);
 						}
 						
-						//mainin sound effect
-//						music.play();
 					} else {
+						// amount full
+						Log.d("catch", "amount full");
+					}
+					isCatching = true;
+				} else if(rect.collidesWith(insect2)) {
+					emitter2 = new CircleParticleEmitter(insect2.getX(), insect2.getY(), 15);
+					particleSystem2 = new SpriteParticleSystem( 
+			                emitter2,
+			                RATE_MIN,
+			                RATE_MAX,
+			                PARTICLES_MAX,
+			                mParticleTextureRegion,
+			                getVertexBufferObjectManager()
+			            );
+					particleSystem2.addParticleInitializer(new BlendFunctionParticleInitializer<Sprite>(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE));
+			        particleSystem2.addParticleInitializer(new VelocityParticleInitializer<Sprite>(-30, 30, -30, 30));
+			        particleSystem2.addParticleInitializer(new ColorParticleInitializer<Sprite>(1.0f, 1.0f, 0.0f));
+			        particleSystem2.addParticleInitializer(new ExpireParticleInitializer<Sprite>(3.0f));
+			        particleSystem2.addParticleModifier(new ScaleParticleModifier<Sprite>(0.0f, 1.0f, 1.0f, 2.0f));
+			        particleSystem2.addParticleModifier(new ColorParticleModifier<Sprite>(0.0f, 1.0f, 1f, 0.5f, 0.8f, 0.2f, 0f, 0.5f));
+			        particleSystem2.addParticleModifier(new AlphaParticleModifier<Sprite>(0.0f, 0.5f, 1.0f, 0.0f));
+			        
+					gameScene.attachChild(particleSystem2);
+					gameScene.registerUpdateHandler(new TimerHandler(1, new ITimerCallback() {
+						@Override
+						public void onTimePassed(TimerHandler pTimerHandler) {
+							particleSystem2.detachSelf();
+						}
+					}));
+					
+					prevAmount = amount;
+					amount++;
+					if(amount <= 5) {		
+						// terkait per-combo-an
+						if(ctype == insect2.getType())
+							combo++;
+						else 
+							combo = 1;
+						
+						// terkait per-score-an
+						spawnScore = true;
+						scoreSpawnTime = 100;
+						scoreSpawnText.setPosition(insect2.getX(), insect2.getY());
+						
+						if(combo != 1) {
+							animateCombo = true;
+							comboScaling = COMBO_MAGNIFY;
+							comboAnimateTime = 50;
+						}
+						
+						score += insect2.getScore() * combo;
+						collectInsect(insect2.getType());
+						comboText.setText("X" + combo);
+						ctype=insect2.getType();
+						scoreSpawnText.setText("+" + insect2.getScore() + " X " + combo);
+						
+						// remove si serangga, buat yg baru lagi
+						gameScene.detachChild(insect2);
+						insect2 = createInsect();
+						gameScene.attachChild(insect2);
+						
+						if(amount < 5) {
+							gameScene.detachChild(basicCrosshair);
+							gameScene.attachChild(basicCrosshair);
+						} else {
+							gameScene.detachChild(fullCrosshair);
+							gameScene.attachChild(fullCrosshair);
+						}
+						
+					} else {
+						// amount full
+						Log.d("catch", "amount full");
+					}
+					isCatching = true;
+				} else if(rect.collidesWith(insect3)) {
+					emitter3 = new CircleParticleEmitter(insect3.getX(), insect3.getY(), 15);
+			        particleSystem3 = new SpriteParticleSystem( 
+			                emitter3,
+			                RATE_MIN,
+			                RATE_MAX,
+			                PARTICLES_MAX,
+			                mParticleTextureRegion,
+			                getVertexBufferObjectManager()
+			            );
+			        
+			        particleSystem3.addParticleInitializer(new BlendFunctionParticleInitializer<Sprite>(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE));
+			        particleSystem3.addParticleInitializer(new VelocityParticleInitializer<Sprite>(-30, 30, -30, 30));
+			        particleSystem3.addParticleInitializer(new ColorParticleInitializer<Sprite>(1.0f, 1.0f, 0.0f));
+			        particleSystem3.addParticleInitializer(new ExpireParticleInitializer<Sprite>(3.0f));
+			        particleSystem3.addParticleModifier(new ScaleParticleModifier<Sprite>(0.0f, 1.0f, 1.0f, 2.0f));
+			        particleSystem3.addParticleModifier(new ColorParticleModifier<Sprite>(0.0f, 1.0f, 1f, 0.5f, 0.8f, 0.2f, 0f, 0.5f));
+			        particleSystem3.addParticleModifier(new AlphaParticleModifier<Sprite>(0.0f, 0.5f, 1.0f, 0.0f));
+					
+			        gameScene.attachChild(particleSystem3);
+			        gameScene.registerUpdateHandler(new TimerHandler(1, new ITimerCallback() {
+						@Override
+						public void onTimePassed(TimerHandler pTimerHandler) {
+							particleSystem3.detachSelf();
+						}
+					}));
+			        
+					prevAmount = amount;
+					amount++;
+					if(amount <= 5) {		
+						// terkait per-combo-an
+						if(ctype == insect3.getType())
+							combo++;
+						else 
+							combo = 1;
+						
+						// terkait per-score-an
+						spawnScore = true;
+						scoreSpawnTime = 100;
+						scoreSpawnText.setPosition(insect3.getX(), insect3.getY());
+						
+						if(combo != 1) {
+							animateCombo = true;
+							comboScaling = COMBO_MAGNIFY;
+							comboAnimateTime = 50;
+						}
+						
+						score += insect3.getScore() * combo;
+						collectInsect(insect3.getType());
+						comboText.setText("X" + combo);
+						ctype=insect3.getType();
+						scoreSpawnText.setText("+" + insect3.getScore() + " X " + combo);
+						
+						// remove si serangga, buat yg baru lagi
+						gameScene.detachChild(insect3);
+						insect3 = createInsect();
+						gameScene.attachChild(insect3);
+						
+						if(amount < 5) {
+							gameScene.detachChild(basicCrosshair);
+							gameScene.attachChild(basicCrosshair);
+						} else {
+							gameScene.detachChild(fullCrosshair);
+							gameScene.attachChild(fullCrosshair);
+						}
+						
+					} else {
+						// amount full
 						Log.d("catch", "amount full");
 					}
 					isCatching = true;
@@ -593,7 +808,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 			}
 		}
 		if(isCatching && accZ < -5.0f) {
-			Log.d("catch", "silakan tangkap");
+//			Log.d("catch", "silakan tangkap");
 			isCatching = false;
 		}
 	}
@@ -602,28 +817,48 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 //		if (dz >= -15.0f){
 			prevAmount = amount;
 			amount = 0;
-			Log.d("amount", "free amount");
+//			Log.d("amount", "free amount");
 //		}
 	}
 	
 	protected Insect createInsect(){
+		// timing of multi-insects
+//		if(elapsedSec <= TWO_INSECTS_SPAWN_BOUNDARY_SEC) {
+//			insect2.setVisible(false);
+//			insect3.setVisible(false);
+//		}
+//		else if(elapsedSec >= TWO_INSECTS_SPAWN_BOUNDARY_SEC && elapsedSec <= THREE_INSECTS_SPAWN_BOUNDARY_SEC) {
+//			insect2.setVisible(true);
+//			insect3.setVisible(false);
+//		} else {
+//			insect2.setVisible(true);
+//			insect3.setVisible(true);
+//		}
+		
 		// randomize the appearance of the insect 
 		Log.d("time elapsed", "elapsedTime : " + elapsedSec);
 		Random randomGenerator = new Random();
 		int type = 1;
 		if(elapsedSec <= Insect.SPAWN_TIME[1]) {
+			Log.d("create insect", "kasus 1");
 			type = 1;
 		} else if (elapsedSec <= Insect.SPAWN_TIME[2]) {
+			Log.d("create insect", "kasus 2");
 			type = randomGenerator.nextInt(2) + 1;
 		} else if (elapsedSec <= Insect.SPAWN_TIME[3]) {
+			Log.d("create insect", "kasus 3");
 			type = randomGenerator.nextInt(3) + 1;
 		} else if (elapsedSec <= Insect.SPAWN_TIME[4]) {
+			Log.d("create insect", "kasus 4");
 			type = randomGenerator.nextInt(4) + 1;
 		} else if (elapsedSec <= Insect.SPAWN_TIME[5]) {
+			Log.d("create insect", "kasus 5");
 			type = randomGenerator.nextInt(5) + 1;
-		} else if (elapsedSec <= Insect.SPAWN_TIME[6]) {
+		} else {
+			Log.d("create insect", "kasus 6");
 			type = randomGenerator.nextInt(6) + 1;
 		}
+		
 		int isTime = randomGenerator.nextInt(7) + 1;
 		if(isTime == 7) {
 			type = 7;
@@ -666,31 +901,52 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		if(accY < -2.0f) {
 			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY() - 1.0f);
+				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY() - 1.0f);
+				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY() - 1.0f);
 			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY());
+				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY());
+				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY());
 			} else {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY() + 1.0f);
+				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY() + 1.0f);
+				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY() + 1.0f);
 			}
 		} else if(accY > -2.0f && accY < 2.0f) {
 			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX(), insect.getY() - 1.0f);
+				insect2.setPosition(insect2.getX(), insect2.getY() - 1.0f);
+				insect3.setPosition(insect3.getX(), insect3.getY() - 1.0f);
 			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX(), insect.getY());
+				insect2.setPosition(insect2.getX(), insect2.getY());
+				insect3.setPosition(insect3.getX(), insect3.getY());
 			} else {
 				insect.setPosition(insect.getX(), insect.getY() + 1.0f);
+				insect2.setPosition(insect2.getX(), insect2.getY() + 1.0f);
+				insect3.setPosition(insect3.getX(), insect3.getY() + 1.0f);
 			}
 		} else {
 			if(accZ < -2.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY() - 1.0f);
+				insect2.setPosition(insect2.getX() + 1.0f, insect2.getY() - 1.0f);
+				insect3.setPosition(insect3.getX() + 1.0f, insect3.getY() - 1.0f);
 			} else if (accZ > -2.0f && accZ < 2.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY());
+				insect2.setPosition(insect2.getX() + 1.0f, insect2.getY());
+				insect3.setPosition(insect3.getX() + 1.0f, insect3.getY());
 			} else {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY() + 1.0f);
+				insect2.setPosition(insect2.getX() + 1.0f, insect2.getY() + 1.0f);
+				insect3.setPosition(insect3.getX() + 1.0f, insect3.getY() + 1.0f);
 			}
 		}
 		
 		// pergerakan khusus masing-masing serangga
 		insect.move();
+		insect2.move();
+		insect3.move();
+		
 		if(!spawnScore) {
 			scoreSpawnText.setPosition(insect.getX(), insect.getY());
 		}
@@ -706,6 +962,24 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 			gameScene.detachChild(insect);
 			insect = createInsect();
 			gameScene.attachChild(insect);
+		}
+		if(insect2.getX() < -50.0f 
+				|| insect2.getX() > activity.mCamera.getWidth() + 50.0f
+				|| insect2.getY() < -50.0f
+				|| insect2.getY() > activity.mCamera.getHeight() + 50.0f) {
+			// remove and create new insect
+			gameScene.detachChild(insect2);
+			insect2 = createInsect();
+			gameScene.attachChild(insect2);
+		}
+		if(insect3.getX() < -50.0f 
+				|| insect3.getX() > activity.mCamera.getWidth() + 50.0f
+				|| insect3.getY() < -50.0f
+				|| insect3.getY() > activity.mCamera.getHeight() + 50.0f) {
+			// remove and create new insect
+			gameScene.detachChild(insect3);
+			insect3 = createInsect();
+			gameScene.attachChild(insect3);
 		}
 	}
 

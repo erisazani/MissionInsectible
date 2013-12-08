@@ -59,13 +59,13 @@ public class Insect extends AnimatedSprite {
 	/* Speed of the insects */
 	public static final float[] INSECT_SPEED = new float[] {
 		0f,
-		0.30f,
-		0.40f,
-		0.75f,
-		0.30f,
-		1.10f,
+		0.60f,
+		0.80f,
+		2.00f,
+		0.80f,
+		2.20f,
+		3.00f,
 		1.50f,
-		0.75f,
 	};
 	
 	private int type;
