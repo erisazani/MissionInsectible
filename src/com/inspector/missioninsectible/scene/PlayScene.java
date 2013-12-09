@@ -1185,15 +1185,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	    }
 	}
 	
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-//	    	activity.setCurrentScene(new MainMenuScene());
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	    	activity.setCurrentScene(new MainMenuScene());
 //	    	activity.BGM.play();
-//	    	activity.gameBGM.stop();
-//	    	finish();
-//	    	activity.BGM.play();
-//	    }
-//	    return super.onKeyDown(keyCode, event);
-//	}
+	    	activity.gameBGM.stop();
+	    	finish();
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
 }
