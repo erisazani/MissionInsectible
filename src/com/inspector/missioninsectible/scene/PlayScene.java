@@ -12,6 +12,7 @@ import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.ConfigChooserOptions;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.particle.SpriteParticleSystem;
 import org.andengine.entity.particle.emitter.CircleParticleEmitter;
@@ -59,6 +60,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -69,6 +71,7 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.EditText;
 
 import com.inspector.missioninsectible.MainGameActivity;
@@ -223,7 +226,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 //		mAcceleration = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 		
 		EngineOptions engineOptions = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(activity.mCamera.getWidth(), activity.mCamera.getHeight()), activity.mCamera);
+				ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), activity.mCamera);
 		
 		final ConfigChooserOptions configChooserOptions = engineOptions.getRenderOptions().getConfigChooserOptions();
 		configChooserOptions.setRequestedRedSize(8);
@@ -245,7 +248,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		this.ladybugTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 		this.ladybugTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(ladybugTiledTexture, this, "gfx/ladybug-tiled.png", 2,1);
 		this.grasshopperTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 350, 128, TextureOptions.NEAREST);
-		this.grasshopperTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(grasshopperTiledTexture, this, "gfx/grasshopper-tiled.png", 3,1);
+		this.grasshopperTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(grasshopperTiledTexture, this, "gfx/grasshopper-tiled.png", 2,1);
 		this.butterflyTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
 		this.butterflyTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(butterflyTiledTexture, this, "gfx/butterfly-tiled.png", 2,1);
 		this.beeTiledTexture = new BuildableBitmapTextureAtlas(this.getTextureManager(), 256, 128, TextureOptions.NEAREST);
@@ -337,7 +340,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	@Override
 	protected Scene onCreateScene() {
 		Log.d("debug", "masuk PlayScene.onCreateScene");
-
+		activity.gameBGM.play();
 		// inisialisasi Scene
 		gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
@@ -489,11 +492,13 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		            	gameScene.detachChild(insect3);
 		            	gameScene.detachChild(mText);
 		            	gameScene.detachChild(pauseButton);
-		            	gameScene.attachChild(particleSystem1);
-		            	gameScene.attachChild(particleSystem2);
-		            	gameScene.attachChild(particleSystem3);
+		            	gameScene.detachChild(particleSystem1);
+		            	gameScene.detachChild(particleSystem2);
+		            	gameScene.detachChild(particleSystem3);
 		            	
-		            	gameScene.unregisterTouchArea(pauseBoard);		            	
+		            	gameScene.unregisterTouchArea(pauseBoard);		
+		            	
+		            	activity.gameBGM.stop();
 		            	
 		            	mEngine.unregisterUpdateHandler(pTimerHandler);
 		            	Log.d("time elapsed", "elapsed sec : " + elapsedSec);
@@ -589,6 +594,8 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		}
 		if(!isCatching) {
 			if (dz >= 10.0f){
+				activity.mCatchInsectSound.setVolume(5.0f);
+				activity.mCatchInsectSound.play();
 				if(rect.collidesWith(insect)) {
 					// create particles
 					emitter1 = new CircleParticleEmitter(insect.getX(), insect.getY(), 15);
@@ -1151,6 +1158,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected void onResume() {
 		Log.d("debug", "masuk PlayScene.onResume");
 		super.onResume();
+		activity.gameBGM.play();
 		System.gc();
 		if(mSensorManager != null) {
 			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
@@ -1169,7 +1177,6 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected void onDestroy()
 	{
 		Log.d("debug", "masuk PlayScene.onDestroy");
-//		gameScene.detachChild(insect);
 		super.onDestroy();
 	        
 	    if (this.isGameLoaded())
@@ -1177,4 +1184,16 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	        System.exit(0);
 	    }
 	}
+	
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+//	    	activity.setCurrentScene(new MainMenuScene());
+//	    	activity.BGM.play();
+//	    	activity.gameBGM.stop();
+//	    	finish();
+//	    	activity.BGM.play();
+//	    }
+//	    return super.onKeyDown(keyCode, event);
+//	}
 }

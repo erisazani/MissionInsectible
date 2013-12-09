@@ -147,12 +147,19 @@ public class InsectDb extends SQLiteOpenHelper {
 		 }else{
 			 updateHiScore(_name,_score,6);
 		 }
-		 Log.d("HiScore","name = "+getHiScoreName(1)+", score = "+getHiScore(1));
-		 Log.d("index",""+"getHiScoreCount() = "+getHiScoreCount());
-		 
-			 while(index>1&&getHiScore(index-1)<_score){
-				 updateHiScore(getHiScoreName(index-1),getHiScore(index-1),index);
-				 updateHiScore(_name,_score,--index);
+		 Log.d("index",""+"index = "+index);
+		// if (index>0) Log.d("index","hi score "+(index-1)+" = "+getHiScore(index-1)+" , score index = "+_score);
+			 while(index>=1)
+			 {		
+				 Log.d("index",""+"index = "+index);
+				 	if(getHiScore(index)<getHiScore(index+1)){
+				 		 Log.d("index",""+"index = "+index+" masuk if.");
+				 	 String tempName=getHiScoreName(index);
+				 	 int tempScore = getHiScore(index);
+					 updateHiScore(getHiScoreName(index+1),getHiScore(index+1),index);
+					 updateHiScore(tempName,tempScore,index+1);
+				 	}
+				 	index--;
 			 }
 		 
 		 Log.d("HiScore","name = "+getHiScoreName(1)+", score = "+getHiScore(1));

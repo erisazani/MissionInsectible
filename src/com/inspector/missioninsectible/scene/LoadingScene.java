@@ -33,7 +33,7 @@ public class LoadingScene extends Scene {
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				activity.startActivity(new Intent(activity, PlayScene.class));
-				activity.setCurrentScene(new MainMenuScene());
+//				activity.setCurrentScene(new MainMenuScene());
 			}};
 			
 			registerEntityModifier(dMod);
