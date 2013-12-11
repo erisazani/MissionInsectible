@@ -122,6 +122,7 @@ public class MainGameActivity extends SimpleBaseGameActivity {
 	public TextureRegion SoundOnTextureRegion;
 	public TextureRegion SoundOffTextureRegion;
 	
+	public boolean mute = false;
 //	public Camera mCamera;
 //	
 //	private Scene mScene;

@@ -11,6 +11,8 @@ import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 
+import android.util.Log;
+
 import com.inspector.missioninsectible.MainGameActivity;
 
 public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener{
@@ -112,7 +114,8 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 		addMenuItem(quitMenuItem);
 		attachChild(clickedQuit);
 
-		activity.BGM.play();
+		if(!activity.mute)
+			activity.BGM.play();
 		
 		suaraOn= new Sprite(activity.getCameraWidth() - activity.SoundOnTextureRegion.getWidth()/2, activity.getCameraHeight() - activity.SoundOnTextureRegion.getHeight()/2, activity.SoundOnTextureRegion, activity.getVertexBufferObjectManager()){
 
@@ -122,16 +125,19 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 				// TODO Auto-generated method stub
 				if(pSceneTouchEvent.isActionDown()){
 					
-					if (musicOn == true) {
+					if (!activity.mute) {
 						activity.BGM.pause();
-						musicOn = false;
+						activity.gameBGM.pause();
+						activity.gameBGM.seekTo(0);
+						activity.mute = true;
 					} else {
+						activity.BGM.seekTo(0);
 						activity.BGM.play();
-						musicOn = true;
+						activity.mute = false;
 					}
-					 soundOn = !soundOn;
-			         suaraOn.setVisible(soundOn);
-			         suaraOff.setVisible(!soundOn);	
+					
+			         suaraOn.setVisible(!activity.mute);
+			         suaraOff.setVisible(activity.mute);	
 				}				
 		         return true;
 			}
@@ -140,22 +146,19 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 		registerTouchArea(suaraOn);				
 		suaraOff= new Sprite(activity.getCameraWidth() - activity.SoundOffTextureRegion.getWidth()/2, activity.getCameraHeight() - activity.SoundOnTextureRegion.getHeight()/2, activity.SoundOffTextureRegion, activity.getVertexBufferObjectManager());	
 		suaraOff.setSize(40, 40);
-		suaraOff.setVisible(false);
+		
+		if(!activity.mute) {
+			Log.d("sound", "tidak mute");
+			suaraOn.setVisible(true);
+			suaraOff.setVisible(false);
+		} else {
+			Log.d("sound", "mute");
+			suaraOn.setVisible(false);
+			suaraOff.setVisible(true);
+		}
+		
 		attachChild(suaraOn);
 		attachChild(suaraOff);
-//		final Sprite soundOn =  new Sprite(activity.getCameraWidth(), activity.getCameraHeight(), activity.s, activity);
-
-
-		//buildAnimations();
-
-		
-
-		//setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
-	//	IMenuItem startButton = new TextMenuItem(MENU_START, activity.mFont, activity.getString(R.string.start), activity.getVertexBufferObjectManager());
-		//startButton.setPosition(mCamera.getWidth() / 2 - startButton.getWidth() / 2, mCamera.getHeight() / 2 - startButton.getHeight() / 2);
-		//addMenuItem(startButton);
-
-
 
 		setOnMenuItemClickListener(this);
 		 
@@ -166,8 +169,9 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 	public boolean onMenuItemClicked(MenuScene arg0, IMenuItem arg1, float arg2, float arg3) {
 	    switch (arg1.getID()) {
 	        case MENU_PLAY:
-	        	activity.BGM.stop();
-	        	activity.mMenuClickedSound.play();
+	        	activity.BGM.pause();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	playMenuItem.setVisible(clicked);
 	        	clickedPlay.setVisible(!clicked);
@@ -176,35 +180,40 @@ public class MainMenuScene extends MenuScene implements IOnMenuItemClickListener
 	        case MENU_BATTLE:
 	            return true;
 	        case MENU_GALLERY:
-	        	activity.mMenuClickedSound.play();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	galleryMenuItem.setVisible(clicked);
 	        	clickedGallery.setVisible(!clicked);
 	        	clickDelay(new GalleryMenuScene());
 	            return true;
 	        case MENU_HISCORE:
-	        	activity.mMenuClickedSound.play();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	hiScoreMenuItem.setVisible(clicked);
 	        	clickedHiScore.setVisible(!clicked);
 	        	clickDelay(new HiScoreMenuScene());
 	            return true;
 	        case MENU_HOWTO:
-	        	activity.mMenuClickedSound.play();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	howToMenuItem.setVisible(clicked);
 	        	clickedHowTo.setVisible(!clicked);
 	        	clickDelay(new HelpMenuScene());
 	            return true;
 	        case MENU_ABOUT:
-	        	activity.mMenuClickedSound.play();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	aboutMenuItem.setVisible(clicked);
 	        	clickedAbout.setVisible(!clicked);
 	        	clickDelay(new AboutMenuScene());
 	            return true;
 	        case MENU_QUIT:
-	        	activity.mMenuClickedSound.play();
+	        	if(!activity.mute)
+	        		activity.mMenuClickedSound.play();
 	        	clicked = !clicked;
 	        	quitMenuItem.setVisible(clicked);
 	        	clickedQuit.setVisible(!clicked);

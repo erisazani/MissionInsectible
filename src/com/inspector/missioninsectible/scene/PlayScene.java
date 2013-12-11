@@ -340,7 +340,14 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	@Override
 	protected Scene onCreateScene() {
 		Log.d("debug", "masuk PlayScene.onCreateScene");
-		activity.gameBGM.play();
+		
+		// Game BGM Activation
+		if(!activity.mute) {
+			activity.gameBGM.pause();
+			activity.gameBGM.seekTo(0);
+			activity.gameBGM.play();
+		}
+		
 		// inisialisasi Scene
 		gameScene = new Scene();
 		gameScene.setBackground(new Background(0.0f, 0.0f, 0.0f, 0.0f));
@@ -498,7 +505,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		            	
 		            	gameScene.unregisterTouchArea(pauseBoard);		
 		            	
-		            	activity.gameBGM.stop();
+		            	activity.gameBGM.pause();
 		            	
 		            	mEngine.unregisterUpdateHandler(pTimerHandler);
 		            	Log.d("time elapsed", "elapsed sec : " + elapsedSec);
@@ -595,7 +602,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		if(!isCatching) {
 			if (dz >= 10.0f){
 				activity.mCatchInsectSound.setVolume(5.0f);
-				activity.mCatchInsectSound.play();
+				
+				if(!activity.mute) {
+					activity.mCatchInsectSound.play();
+				}
+				
 				if(rect.collidesWith(insect)) {
 					// create particles
 					emitter1 = new CircleParticleEmitter(insect.getX(), insect.getY(), 15);
@@ -905,12 +916,12 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	}
 	
 	public void updateSpritePosition() {
-		if(accY < -2.0f) {
-			if(accZ < -2.0f) {
+		if(accY < -1.0f) {
+			if(accZ < -1.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY() - 1.0f);
 				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY() - 1.0f);
 				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY() - 1.0f);
-			} else if (accZ > -2.0f && accZ < 2.0f) {
+			} else if (accZ > -1.0f && accZ < 1.0f) {
 				insect.setPosition(insect.getX() - 1.0f, insect.getY());
 				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY());
 				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY());
@@ -919,12 +930,12 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				insect2.setPosition(insect2.getX() - 1.0f, insect2.getY() + 1.0f);
 				insect3.setPosition(insect3.getX() - 1.0f, insect3.getY() + 1.0f);
 			}
-		} else if(accY > -2.0f && accY < 2.0f) {
-			if(accZ < -2.0f) {
+		} else if(accY > -1.0f && accY < 1.0f) {
+			if(accZ < -1.0f) {
 				insect.setPosition(insect.getX(), insect.getY() - 1.0f);
 				insect2.setPosition(insect2.getX(), insect2.getY() - 1.0f);
 				insect3.setPosition(insect3.getX(), insect3.getY() - 1.0f);
-			} else if (accZ > -2.0f && accZ < 2.0f) {
+			} else if (accZ > -1.0f && accZ < 1.0f) {
 				insect.setPosition(insect.getX(), insect.getY());
 				insect2.setPosition(insect2.getX(), insect2.getY());
 				insect3.setPosition(insect3.getX(), insect3.getY());
@@ -934,11 +945,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 				insect3.setPosition(insect3.getX(), insect3.getY() + 1.0f);
 			}
 		} else {
-			if(accZ < -2.0f) {
+			if(accZ < -1.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY() - 1.0f);
 				insect2.setPosition(insect2.getX() + 1.0f, insect2.getY() - 1.0f);
 				insect3.setPosition(insect3.getX() + 1.0f, insect3.getY() - 1.0f);
-			} else if (accZ > -2.0f && accZ < 2.0f) {
+			} else if (accZ > -1.0f && accZ < 1.0f) {
 				insect.setPosition(insect.getX() + 1.0f, insect.getY());
 				insect2.setPosition(insect2.getX() + 1.0f, insect2.getY());
 				insect3.setPosition(insect3.getX() + 1.0f, insect3.getY());
@@ -1158,7 +1169,11 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	protected void onResume() {
 		Log.d("debug", "masuk PlayScene.onResume");
 		super.onResume();
-		activity.gameBGM.play();
+		
+		if(!activity.mute) {
+			activity.gameBGM.play();
+		}
+		
 		System.gc();
 		if(mSensorManager != null) {
 			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
@@ -1188,10 +1203,15 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	    	Log.d("BGM", "Keluar dari Play Scene");
 	    	activity.setCurrentScene(new MainMenuScene());
-//	    	activity.BGM.play();
-	    	activity.gameBGM.stop();
-	    	finish();
+	    	activity.BGM.pause();
+	    	activity.gameBGM.pause();
+	    	
+	    	if(!activity.mute) {
+	    		activity.BGM.seekTo(0);
+	    		activity.BGM.play();
+	    	}
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}

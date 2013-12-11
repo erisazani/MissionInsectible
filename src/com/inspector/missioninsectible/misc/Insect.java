@@ -59,13 +59,13 @@ public class Insect extends AnimatedSprite {
 	/* Speed of the insects */
 	public static final float[] INSECT_SPEED = new float[] {
 		0f,
-		0.60f,
-		0.80f,
-		2.00f,
-		0.80f,
-		2.20f,
-		3.00f,
+		0.30f,
+		0.40f,
+		1.00f,
+		0.40f,
+		1.10f,
 		1.50f,
+		0.75f,
 	};
 	
 	private int type;
@@ -88,6 +88,7 @@ public class Insect extends AnimatedSprite {
 		
 		moveDirection = 0;
 		moveTime = 100;
+		setSize(40.0f, 40.0f);
 		animate(100);
 	}
 	
@@ -113,16 +114,6 @@ public class Insect extends AnimatedSprite {
 	
 	public void move() {
 		Random r = new Random();
-//		if(r.nextInt(2) == 0) {
-//			this.setPosition(this.getX() - getSpeed(), this.getY());
-////			spriteXScale = -1.0f;
-////			setScaleX(spriteXScale);
-//		}
-//		else {
-//			this.setPosition(this.getX() + getSpeed(), this.getY());
-////			spriteXScale = 1.0f;
-////			setScaleX(spriteXScale);
-//		}
 		
 		// akan digunakan segera
 		if(moveTime >= 0) {
