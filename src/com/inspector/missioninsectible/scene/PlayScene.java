@@ -1171,6 +1171,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		super.onResume();
 		
 		if(!activity.mute) {
+			activity.gameBGM.setVolume(0.5f);
 			activity.gameBGM.play();
 		}
 		
