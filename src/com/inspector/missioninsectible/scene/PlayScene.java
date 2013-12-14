@@ -420,8 +420,7 @@ public class PlayScene extends BaseAugmentedRealityGameActivity implements Senso
 		insect.setVisible(false);
 		insect2.setVisible(false);
 		insect3.setVisible(false);
-		
-		
+				
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		// time handler untuk countdown

@@ -2,6 +2,7 @@ package com.inspector.missioninsectible;
 
 import java.io.IOException;
 
+
 import org.andengine.audio.music.Music;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.sound.Sound;
@@ -241,42 +242,42 @@ public class MainGameActivity extends SimpleBaseGameActivity {
         this.mLoadScreenBGRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mLoadScreenBGTexture, this, "LoadingImage.png", 0, 0);
         this.mLoadScreenBGTexture.load();	
 
-    // for clicked menu button
-    this.mMenuClickedTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-    this.mMenuPlayClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-play-active.png",0,0);
-    this.mMenuBattleClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-battle-active.png", 0, 45);
-    this.mMenuGalleryClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-gallery-active.png", 0, 90);
-    this.mMenuScoreClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-hiscore-active.png", 0, 135);
-    this.mMenuHowToClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-howto-active.png", 105, 0);
-    this.mMenuAboutClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-about-active.png", 105, 45);
-    this.mMenuQuitClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-quit-active.png", 105, 90);	
-    this.mMenuClickedTexture.load();
-  
-    this.SoundOnTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_on.png", 0, 0);
-	this.SoundOffTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_off.png", 55, 0);
-	this.mSoundButtonTexture.load();
-	
-	this.mBackgroundTexture = new BitmapTextureAtlas(this.getTextureManager(), CAMERA_WIDTH, CAMERA_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-	this.mMenuBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBackgroundTexture, this, "Splash_fix.png", 0, 0);	
-	this.mBackgroundTexture.load();
-        
-	SoundFactory.setAssetBasePath("mfx/");
-	try {
-		this.mMenuClickedSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "Menu Select 2.wav");
-		this.mCatchInsectSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "catch_insect.ogg");
-	} catch (final IOException e) {
-		Debug.e(e);
-	}
-	
-	MusicFactory.setAssetBasePath("mfx/");
-	try{
-	this.BGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "bgm.ogg");
-	this.BGM.setLooping(true);
-	this.gameBGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "game_bgm.ogg");
-	this.gameBGM.setLooping(true);
-	} catch (final IOException e) {
-		Debug.e(e);
-	}
+	    // for clicked menu button
+	    this.mMenuClickedTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+	    this.mMenuPlayClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-play-active.png",0,0);
+	    this.mMenuBattleClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-battle-active.png", 0, 45);
+	    this.mMenuGalleryClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-gallery-active.png", 0, 90);
+	    this.mMenuScoreClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-hiscore-active.png", 0, 135);
+	    this.mMenuHowToClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-howto-active.png", 105, 0);
+	    this.mMenuAboutClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-about-active.png", 105, 45);
+	    this.mMenuQuitClickedTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mMenuClickedTexture, this, "Menus-quit-active.png", 105, 90);	
+	    this.mMenuClickedTexture.load();
+	  
+	    this.SoundOnTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_on.png", 0, 0);
+		this.SoundOffTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mSoundButtonTexture, this, "sound_off.png", 55, 0);
+		this.mSoundButtonTexture.load();
+		
+		this.mBackgroundTexture = new BitmapTextureAtlas(this.getTextureManager(), CAMERA_WIDTH, CAMERA_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mMenuBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBackgroundTexture, this, "Splash_fix.png", 0, 0);	
+		this.mBackgroundTexture.load();
+	        
+		SoundFactory.setAssetBasePath("mfx/");
+		try {
+			this.mMenuClickedSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "Menu Select 2.wav");
+			this.mCatchInsectSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "catch_insect.ogg");
+		} catch (final IOException e) {
+			Debug.e(e);
+		}
+		
+		MusicFactory.setAssetBasePath("mfx/");
+		try{
+		this.BGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "bgm.ogg");
+		this.BGM.setLooping(true);
+		this.gameBGM = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "game_bgm.ogg");
+		this.gameBGM.setLooping(true);
+		} catch (final IOException e) {
+			Debug.e(e);
+		}
 	
 	}
 	
